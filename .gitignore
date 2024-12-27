@@ -2,3 +2,6 @@
 业务要求.md
 bonus.md
 README.md
+
+.vscode/**
+build/**
