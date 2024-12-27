@@ -1,6 +1,6 @@
 #include "BlockList.hpp"
 
-BlockLists<int, int> data;
+BlockList<int, int> data;
 
 int hash(std::string &key) {
     static constexpr int mod = 1e9 + 7;

@@ -10,7 +10,7 @@
 // #define T1 int
 // #define T2 int
 template<typename T1, typename T2>
-class BlockLists {
+class BlockList {
 public:
     struct node1 {
         int nxtAddr;
@@ -97,13 +97,15 @@ public:
     class blocks {
     private:
         const static int sizeLimit = 20;
-        fileReader head, body;
     public:
+        fileReader head, body;
+        std::string filePreffix;
         int len;
         std::vector<int> headAddr;
         std::vector<node1> heads;
-        void initialize(std::string str) {
-            head.initialize(str + "_head");
+        void initialize(std::string str = "") {
+            filePreffix = str;
+            head.initialize(filePreffix + "_head");
             head.read(len, 0);
             for (int i = 0; i < len; ++i) {
                 int tmp;
@@ -111,7 +113,7 @@ public:
                 headAddr.push_back(tmp);
             }
             head.close();
-            body.initialize(str + "_body");
+            body.initialize(filePreffix + "_body");
             for (int i = 0; i < len; ++i) {
                 node1 tmp;
                 body.read(tmp, headAddr[i]);
@@ -346,16 +348,6 @@ public:
             }
             std::cout << '\n';
         }
-        ~blocks() {
-            body.close();
-            head.initialize();
-            head.write(len, 0);
-            for (int i = 0; i < len; ++i) {
-                head.write(headAddr[i], (i + 1) * sizeof(int));
-            }
-            headAddr.clear();
-            head.close();
-        }
     };
     blocks sb;
     void initialize(std::string str = "") {
@@ -369,6 +361,18 @@ public:
     }
     void query(T1 key) {
         sb.query(key);
+    }
+    ~BlockList() {
+        // std::cerr << "good" << std::endl;
+        // std::cerr << sb.len << std::endl;
+        sb.body.close();
+        sb.head.initialize(sb.filePreffix + "_head");
+        sb.head.write(sb.len, 0);
+        for (int i = 0; i < sb.len; ++i) {
+            sb.head.write(sb.headAddr[i], (i + 1) * sizeof(int));
+        }
+        sb.headAddr.clear();
+        sb.head.close();
     }
 };
 
