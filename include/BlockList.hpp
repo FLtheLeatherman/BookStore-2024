@@ -1,12 +1,15 @@
 #ifndef BLOCKLIST_H
 #define BLOCKLIST_H
 
+// 需要进行修改以使其更加美观。
+
 #include <iostream>
 #include <fstream>
 #include <cstring>
 #include <vector>
 
 // 应当保证: T1, T2 可以被排序且可以被输出
+// T1, T2 的大小应固定; 字符串类使用 std::array 实现.
 // #define T1 int
 // #define T2 int
 template<typename T1, typename T2>
@@ -363,8 +366,6 @@ public:
         sb.query(key);
     }
     ~BlockList() {
-        // std::cerr << "good" << std::endl;
-        // std::cerr << sb.len << std::endl;
         sb.body.close();
         sb.head.initialize(sb.filePreffix + "_head");
         sb.head.write(sb.len, 0);
