@@ -84,6 +84,15 @@ std::ostream& operator <<(std::ostream &out, const Account &account) {
     return out;
 } // 实际上似乎并不用实现这个函数。不过便于调试（和通过编译）还是写了。
 
+void AccountStorage::initialize() {
+    blockList.initialize("Account");
+    std::string s1 = "root", s2 = "sjtu";
+    Account root(s1, s2, s1, 7);
+    std::vector<Account> res = blockList.query(s1);
+    if (res.empty()) {
+        blockList.insert(root.UserID, root);
+    }
+}
 void AccountStorage::select(Book book) {
     userStack.back().second = book;
 }
@@ -154,7 +163,7 @@ bool AccountStorage::useradd(String30 UserID, String30 Password, int Privilege, 
     blockList.insert(UserID, newAccount);
     return true;
 }
-bool AccountStorage::deleteadd(String30 UserID) {
+bool AccountStorage::deleteUser(String30 UserID) {
     std::vector<Account> res = blockList.query(UserID);
     if (res.empty()) {
         return false;

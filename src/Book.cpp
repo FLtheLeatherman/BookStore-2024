@@ -242,6 +242,9 @@ bool BookStorage::buy(String20 ISBN, size_t quantity) {
     if (!res.size()) {
         return false;
     } else {
+        if (res[0].number < quantity) {
+            return false;
+        }
         std::cout << std::fixed << std::setprecision(2) << res[0].price * quantity << '\n';
         blockList1.mydelete(ISBN, res[0]);
         res[0].number -= quantity;

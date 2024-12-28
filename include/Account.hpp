@@ -40,6 +40,8 @@ private:
     BlockList<String30, Account> blockList;
     std::vector<std::pair<Account, Book>> userStack;
 public:
+    void initialize();
+    ~AccountStorage() = default;
     void select(Book book);
     Book getSelect();
     bool login(String30 UserID, String30 Password);
@@ -47,7 +49,7 @@ public:
     bool signup(String30 UserID, String30 Password, String30 Username);
     bool changePassword(String30 UserID, String30 CurrentPassword, String30 NewPassword);
     bool useradd(String30 UserID, String30 Password, int Privilege, String30 Username);
-    bool deleteadd(String30 UserID);
+    bool deleteUser(String30 UserID);
 };
 
 #endif
