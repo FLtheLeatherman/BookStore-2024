@@ -2,40 +2,50 @@
 #define COMMAND_H
 
 #include <string>
+#include "Account.hpp"
+#include "Book.hpp"
+#include "Log.hpp"
 
 class Run {
+private:
+    AccountStorage as;
+    BookStorage bs;
+    LogInfoStorage ls;
+    Account nowAccount;
 public:
-    static void invalid();
+    void initialize();
 
-    static void run(std::string);
+    void invalid();
 
-    static int getUserID(std::string, int);
-    static int getPassword(std::string, int);
-    static int getCurrentPassword(std::string, int);
-    static int getNewPassword(std::string, int);
-    static int getUsername(std::string, int);
-    static int getPrivilege(std::string, int);
-    static int getISBN(std::string, int);
-    static int getBookName(std::string, int);
-    static int getAuthor(std::string, int);
-    static int getKeyword(std::string, int);
-    static int getQuantity(std::string, int);
-    static int getPrice(std::string, int);
-    static int getTotalCost(std::string, int);
-    static int getCount(std::string, int);
+    void run(std::string);
 
-    static void runSu(std::string);
-    static void runLogout(std::string);
-    static void runRegister(std::string);
-    static void runPasswd(std::string);
-    static void runUseradd(std::string);
-    static void runDelete(std::string);
-    static void runShow(std::string);
-    static void runBuy(std::string);
-    static void runSelect(std::string);
-    static void runModify(std::string);
-    static void runImport(std::string);
-    static void runShowFinance(std::string);
+    int getUserID(std::string, int);
+    int getPassword(std::string, int);
+    int getCurrentPassword(std::string, int);
+    int getNewPassword(std::string, int);
+    int getUsername(std::string, int);
+    int getPrivilege(std::string, int);
+    int getISBN(std::string, int);
+    int getBookName(std::string, int);
+    int getAuthor(std::string, int);
+    int getKeyword(std::string, int);
+    int getQuantity(std::string, int);
+    int getPrice(std::string, int);
+    int getTotalCost(std::string, int);
+    int getCount(std::string, int);
+
+    void runSu(std::string);
+    void runLogout(std::string);
+    void runRegister(std::string);
+    void runPasswd(std::string);
+    void runUseradd(std::string);
+    void runDelete(std::string);
+    void runShow(std::string);
+    void runBuy(std::string);
+    void runSelect(std::string);
+    void runModify(std::string);
+    void runImport(std::string);
+    void runShowFinance(std::string);
 };
 
 #endif

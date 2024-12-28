@@ -54,4 +54,5 @@ bool LogInfoStorage::showFinance(int Count) {
             std::cout << "+ " << tmp1.income << " - " << tmp1.expend << '\n';
         }
     }
+    return true;
 }

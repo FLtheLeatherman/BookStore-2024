@@ -10,5 +10,6 @@ add_executable(code
         src/Book.cpp
         src/Account.cpp
         src/Log.cpp
+        src/Command.cpp
         src/main.cpp
 )

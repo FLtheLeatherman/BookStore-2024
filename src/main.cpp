@@ -67,18 +67,14 @@
 int main() {
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr), std::cout.tie(nullptr);
-    AccountStorage as;
-    BookStorage bs;
-    LogInfoStorage ls;
-    as.initialize();
-    bs.initialize();
-    ls.initialize();
+    Run exe;
+    exe.initialize();
     std::string str;
     while (true) {
         getline(std::cin, str);
         if (str == "quit" || str == "exit") {
             break;
         }
-        else run(str);
+        else exe.run(str);
     }
 }

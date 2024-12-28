@@ -66,6 +66,7 @@ std::ostream& operator <<(std::ostream &out, const String30 &str) {
 
 Account::Account() {
     UserID = String30();
+    Privilege = 0;
 }
 Account::Account(String30 UserID, String30 Password, String30 Username, int Privilege) {
     this->UserID = UserID;

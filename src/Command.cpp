@@ -2,9 +2,13 @@
 #include "Command.hpp"
 #include "Book.hpp"
 #include "Account.hpp"
-#include "Log.cpp"
+#include "Log.hpp"
 
-Account nowAccount;
+void Run::initialize() {
+    as.initialize();
+    bs.initialize();
+    ls.initialize();
+}
 
 void Run::invalid() {
     std::cout << "Invalid" << std::endl;
@@ -178,5 +182,57 @@ int Run::getCount(std::string str, int pos) {
 }
 
 void Run::runSu(std::string command) {
-    
+    int p1 = 3;
+    int p2 = getUserID(command, p1);
+    if (p2 == -1) {
+        invalid();
+    }
+    if (p2 == command.length()) {
+        String30 UserID = command.substr(p1, p2 - p1), Password;
+        if (!as.login(UserID, Password)) {
+            invalid();
+        }
+    } else {
+        int p3 = getPassword(command, p2 + 1);
+        if (p3 == -1) {
+            invalid();
+        }
+        String30 UserID = command.substr(p1, p2 - p1), Password = command.substr(p2 + 1, p3 - p2 - 1);
+        if (!as.login(UserID, Password)) {
+            invalid();
+        }
+    }
+}
+void Run::runLogout(std::string) {
+
+}
+void Run::runRegister(std::string) {
+
+}
+void Run::runPasswd(std::string) {
+
+}
+void Run::runUseradd(std::string) {
+
+}
+void Run::runDelete(std::string) {
+
+}
+void Run::runShow(std::string) {
+
+}
+void Run::runBuy(std::string) {
+
+}
+void Run::runSelect(std::string) {
+
+}
+void Run::runModify(std::string) {
+
+}
+void Run::runImport(std::string) {
+
+}
+void Run::runShowFinance(std::string) {
+
 }
