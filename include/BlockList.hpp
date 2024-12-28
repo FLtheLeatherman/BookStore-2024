@@ -10,8 +10,7 @@
 
 // 应当保证: T1, T2 可以被排序且可以被输出
 // T1, T2 的大小应固定; 字符串类使用 std::array 实现.
-// #define T1 int
-// #define T2 int
+
 template<typename T1, typename T2>
 class BlockList {
 public:
@@ -21,7 +20,7 @@ public:
         int nxtLevelAddr;
         T1 headKey;
         T2 headValue;
-        node1(int nxtAddr = -1, int sizAddr = -1, int nxtLevelAddr = -1, T1 headKey = 0, T2 headValue = 0) {
+        node1(int nxtAddr = -1, int sizAddr = -1, int nxtLevelAddr = -1, T1 headKey = T1(), T2 headValue = T2()) {
             this->nxtAddr = nxtAddr;
             this->sizAddr = sizAddr;
             this->nxtLevelAddr = nxtLevelAddr;
@@ -36,7 +35,7 @@ public:
         int nxtAddr;
         T1 key;
         T2 value;
-        node2(int nxtAddr = -1, T1 key = 0, T2 value = 0) {
+        node2(int nxtAddr = -1, T1 key = T1(), T2 value = T2()) {
             this->nxtAddr = nxtAddr;
             this->key = key;
             this->value = value;
@@ -103,13 +102,14 @@ public:
     public:
         fileReader head, body;
         std::string filePreffix;
-        int len;
+        int len = 0;
         std::vector<int> headAddr;
         std::vector<node1> heads;
         void initialize(std::string str = "") {
             filePreffix = str;
             head.initialize(filePreffix + "_head");
             head.read(len, 0);
+            // std::cout << len << std::endl;
             for (int i = 0; i < len; ++i) {
                 int tmp;
                 head.read(tmp, (i + 1) * sizeof(int));
@@ -141,7 +141,8 @@ public:
                 std::pair<T1, T2> now = std::make_pair(key, value);
                 int pos = headAddr.size() - 1;
                 for (size_t i = 0; i < headAddr.size(); ++i) {
-                    if (heads[i].getValue() > now) {
+                    std::pair<T1, T2> tmp = heads[i].getValue();
+                    if (now.first < tmp.first || (now.first == tmp.first && now.second < tmp.second)) {
                         pos = i - 1;
                         break;
                     }
@@ -172,13 +173,15 @@ public:
                             break;
                         }
                         body.read(nxt, cur.nxtAddr);
-                        if (nxt.getValue() > now) {
+                        std::pair<T1, T2> tmp = nxt.getValue();
+                        if (now.first < tmp.first || (now.first == tmp.first && now.second < tmp.second)) {
                             break;
                         }
                         curAddr = cur.nxtAddr;
                         cur = nxt;
                     }
-                    if (cur.getValue() != now) {
+                    std::pair<T1, T2> tmp = cur.getValue();
+                    if ((!(tmp.first == now.first)) || (!(tmp.second == now.second))) {
                         int size;
                         body.read(size, tmp1.sizAddr);
                         size++;
@@ -240,7 +243,8 @@ public:
             }
             for (size_t i = 0; i < len; ++i) {
                 node1 tmp = heads[i];
-                if (tmp.getValue() > now) {
+                std::pair<T1, T2> tmpV = tmp.getValue();
+                if (now.first < tmpV.first || (now.first == tmpV.first && now.second < tmpV.second)) {
                     pos = i - 1;
                     break;
                 }
@@ -250,7 +254,8 @@ public:
             node1 tmp1 = heads[pos];
             int size;
             body.read(size, tmp1.sizAddr);
-            if (tmp1.getValue() == now) {
+            std::pair<T1, T2> tmp = tmp1.getValue();
+            if (tmp.first == now.first && tmp.second == now.second) {
                 node2 tmp2;
                 body.read(tmp2, tmp1.nxtLevelAddr);
                 tmp1.nxtLevelAddr = tmp2.nxtAddr;
@@ -271,14 +276,16 @@ public:
                     if (cur.nxtAddr == -1) {
                         break;
                     }
-                    if (cur.getValue() >= now) {
+                    std::pair<T1, T2> tmp = cur.getValue();
+                    if (!(tmp.first < now.first || (now.first == tmp.first && tmp.second < now.second))) {
                         break;
                     }
                     lstAddr = lst.nxtAddr;
                     lst = cur;
                     body.read(cur, cur.nxtAddr);
                 }
-                if (cur.getValue() == now) {
+                std::pair<T1, T2> tmp = cur.getValue();
+                if (tmp.first == now.first && tmp.second == now.second) {
                     lst.nxtAddr = cur.nxtAddr;
                     body.write(lst, lstAddr);
                     size--;
@@ -298,7 +305,7 @@ public:
                 heads.erase(heads.begin() + pos);
             }
         }
-        bool query(T1 key, int pos) {
+        bool query(T1 key, int pos, std::vector<T2>& res) {
             node1 tmp = heads[pos];
             node2 cur;
             body.read(cur, tmp.nxtLevelAddr);
@@ -306,9 +313,10 @@ public:
             while (true) {
                 if (cur.key == key) {
                     flag = true;
-                    std::cout << cur.value << ' ';
+                    // std::cout << cur.value << '\n';
+                    res.push_back(cur.value);
                 }
-                if (cur.key > key) {
+                if (key < cur.key) {
                     break;
                 }
                 if (cur.nxtAddr == -1) {
@@ -318,38 +326,57 @@ public:
             }
             return flag;
         }
-        void query(T1 key) {
+        std::vector<T2> query(T1 key) {
             std::pair<T1, int> now = std::make_pair(key, -1);
             int pos = headAddr.size() - 1;
+            std::vector<T2> vec;
             for (size_t i = 0; i < headAddr.size(); ++i) {
                 node1 tmp = heads[i];
-                if (tmp.headKey >= key) {
+                if (key < tmp.headKey || key == tmp.headKey) {
                     pos = i;
                     break;
                 }
             }
             if (pos == -1) {
-                std::cout << "null";
+                return vec;
             } else {
                 bool flag = true;
                 bool flag2 = false;
                 if (pos > 0) {
-                    flag2 |= query(key, pos - 1);
+                    flag2 |= query(key, pos - 1, vec);
                 }                
                 for (size_t i = pos; i < headAddr.size(); ++i) {
-                    if (heads[i].headKey > key) {
+                    if (key < heads[i].headKey) {
                         break;
                     }
-                    bool res = query(key, i);
+                    bool res = query(key, i, vec);
                     flag &= res;
                     flag2 |= res;
                     if (!flag) break;
                 }
-                if (!flag2) {
-                    std::cout << "null";
+                // if (!flag2) {
+                //     std::cout << "null";
+                // }
+            }
+            // std::cout << '\n';
+            return vec;
+        }
+        std::vector<T2> show() {
+            std::vector<T2> res;
+            for (size_t i = 0; i < headAddr.size(); ++i) {
+                node1 tmp = heads[i];
+                node2 cur;
+                body.read(cur, tmp.nxtLevelAddr);
+                while (true) {
+                    // std::cout << cur.value << '\n';
+                    res.push_back(cur.value);
+                    if (cur.nxtAddr == -1) {
+                        break;
+                    }
+                    body.read(cur, cur.nxtAddr);
                 }
             }
-            std::cout << '\n';
+            return res;
         }
     };
     blocks sb;
@@ -362,8 +389,11 @@ public:
     void mydelete(T1 key, T2 value) {
         sb.mydelete(key, value);
     }
-    void query(T1 key) {
-        sb.query(key);
+    std::vector<T2> query(T1 key) {
+        return sb.query(key);
+    }
+    std::vector<T2> show() {
+        return sb.show();
     }
     ~BlockList() {
         sb.body.close();
