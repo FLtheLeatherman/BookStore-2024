@@ -249,7 +249,7 @@ bool BookStorage::buy(String20 ISBN, size_t quantity) {
         return true;
     }
 }
-bool BookStorage::select(String20 ISBN) {
+void BookStorage::select(String20 ISBN) {
     std::vector<Book> res = blockList1.query(ISBN);
     if (!res.size()) {
         Book tmp;
@@ -259,21 +259,118 @@ bool BookStorage::select(String20 ISBN) {
         blockList3.insert(String60(), ISBN);
         blockList4.insert(String60(), ISBN);
     }
-    current = ISBN;
-    return true;
+    selected = true;
+    current = res[0];
 }
 bool BookStorage::modifyISBN(String20 ISBN) {
+    if (!selected) {
+        return false;
+    }
+    if (ISBN == current.ISBN) {
+        return false;
+    }
+    blockList1.mydelete(current.ISBN, current);
+    blockList2.mydelete(current.BookName, current.ISBN);
+    blockList3.mydelete(current.Author, current.ISBN);
+    int len = current.Keyword.getLen();
+    std::array<char, 60> Keyword = current.Keyword.getValue();
+    std::string tmp = "";
+    for (int i = 0; i < len; ++i) {
+        if (Keyword[i] == '|') {
+            blockList4.mydelete(String60(tmp), current.ISBN);
+            tmp = "";
+        } else {
+            tmp += Keyword[i];
+        }
+    }
+    blockList4.mydelete(String60(tmp), current.ISBN);
+    tmp = "";
+    current.ISBN = ISBN;
+    blockList1.insert(current.ISBN, current);
+    blockList2.insert(current.BookName, current.ISBN);
+    blockList3.insert(current.Author, current.ISBN);
+    for (int i = 0; i < len; ++i) {
+        if (Keyword[i] == '|') {
+            blockList4.insert(String60(tmp), current.ISBN);
+            tmp = "";
+        } else {
+            tmp += Keyword[i];
+        }
+    }
+    blockList4.insert(String60(tmp), current.ISBN);
+    tmp = "";
     return true;
 }
 bool BookStorage::modifyBookName(String60 BookName) {
+    if (!selected) {
+        return false;
+    }
+    blockList1.mydelete(current.ISBN, current);
+    blockList2.mydelete(current.BookName, current.ISBN);
+    current.BookName = BookName;
+    blockList1.insert(current.ISBN, current);
+    blockList2.insert(current.BookName, current.ISBN);
     return true;
 }
 bool BookStorage::modifyAuthor(String60 Author) {
+    if (!selected) {
+        return false;
+    }
+    blockList1.mydelete(current.ISBN, current);
+    blockList3.mydelete(current.Author, current.ISBN);
+    current.Author = Author;
+    blockList1.insert(current.ISBN, current);
+    blockList3.insert(current.Author, current.ISBN);
     return true;
 }
 bool BookStorage::modifyKeyword(String60 Keyword) {
+    if (!selected) {
+        return false;
+    }
+    blockList1.mydelete(current.ISBN, current);
+    int len = current.Keyword.getLen();
+    std::array<char, 60> keyword = current.Keyword.getValue();
+    std::string tmp = "";
+    for (int i = 0; i < len; ++i) {
+        if (keyword[i] == '|') {
+            blockList4.mydelete(String60(tmp), current.ISBN);
+            tmp = "";
+        } else {
+            tmp += keyword[i];
+        }
+    }
+    blockList4.mydelete(String60(tmp), current.ISBN);
+    tmp = "";
+    current.Keyword = Keyword;
+    blockList1.insert(current.ISBN, current);
+    len = current.Keyword.getLen();
+    keyword = current.Keyword.getValue();
+    for (int i = 0; i < len; ++i) {
+        if (keyword[i] == '|') {
+            blockList4.insert(String60(tmp), current.ISBN);
+            tmp = "";
+        } else {
+            tmp += keyword[i];
+        }
+    }
+    blockList4.insert(String60(tmp), current.ISBN);
     return true;
 }
-bool BookStorage::import(size_t quantity, double totalCost) {
+bool BookStorage::modifyPrice(double price) {
+    if (!selected) {
+        return false;
+    }
+    blockList1.mydelete(current.ISBN, current);
+    current.price = price;
+    blockList1.insert(current.ISBN, current);
+    return true;
+}
+bool BookStorage::import(size_t quantity) {
+    if (!selected) {
+        return false;
+    }
+    blockList1.mydelete(current.ISBN, current);
+    current.number += quantity;
+    blockList1.insert(current.ISBN, current);
     return true;
 }

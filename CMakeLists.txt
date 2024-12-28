@@ -7,5 +7,6 @@ include_directories(include)
 add_executable(code
         src/BlockList.cpp
         src/Book.cpp
+        src/Account.cpp
         src/main.cpp
 )

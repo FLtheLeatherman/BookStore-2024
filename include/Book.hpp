@@ -59,7 +59,8 @@ private:
     BlockList<String60, String20> blockList2; // BookName -> ISBN
     BlockList<String60, String20> blockList3; // Author -> ISBN
     BlockList<String60, String20> blockList4; // Keyword -> ISBN
-    String20 current;
+    bool selected;
+    Book current;
 public:
     void initialize();
     ~BookStorage() = default;
@@ -69,12 +70,13 @@ public:
     void showAuthor(String60 Author);
     bool showKeyword(String60 Keyword);
     bool buy(String20 ISBN, size_t quantity);
-    bool select(String20 ISBN);
+    void select(String20 ISBN);
     bool modifyISBN(String20 ISBN);
     bool modifyBookName(String60 BookName);
     bool modifyAuthor(String60 Author);
     bool modifyKeyword(String60 Keyword);
-    bool import(size_t quantity, double totalCost);
+    bool modifyPrice(double price);
+    bool import(size_t quantity);
 };
 
 #endif
