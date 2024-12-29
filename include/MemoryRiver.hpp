@@ -34,6 +34,8 @@ public:
         file.open(file_name, std::ios::in | std::ios::out | std::ios::binary);
         if (!file) {
             file.open(file_name, std::ios::out);
+            int tmp = 0;
+            file.write(reinterpret_cast<char*>(&tmp), sizeof(int));
         }
         file.close();
         file.open(file_name, std::ios::in | std::ios::out | std::ios::binary);
@@ -114,7 +116,7 @@ public:
     // }
 
     void read(T &t, int index) {
-        file.seekp(info_len * sizeof(int) + (index - 1) * sizeofT);
+        file.seekg(info_len * sizeof(int) + (index - 1) * sizeofT);
         file.read(reinterpret_cast<char*>(&t), sizeofT);
     }
 

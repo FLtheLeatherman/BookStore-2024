@@ -36,8 +36,10 @@ void Run::format(std::string &str) {
 
 void Run::run(std::string command) {
     format(command);
+    // std::cout << command << std::endl;
     if (command.substr(0, 3) == "su ") {
-        runRegister(command);
+        // std::cerr << "SIUUUUU" << std::endl;
+        runSu(command);
     } else if (command.substr(0, 6) == "logout") {
         runLogout(command);
     } else if (command.substr(0, 9) == "register ") {
@@ -48,8 +50,6 @@ void Run::run(std::string command) {
         runUseradd(command);
     } else if (command.substr(0, 7) == "delete ") {
         runDelete(command);
-    } else if (command.substr(0, 5) == "show ") {
-        runShow(command);
     } else if (command.substr(0, 4) == "buy ") {
         runBuy(command);
     } else if (command.substr(0, 7) == "select ") {
@@ -59,6 +59,12 @@ void Run::run(std::string command) {
     } else if (command.substr(0, 7) == "import ") {
         runImport(command);
     } else if (command.substr(0, 13) == "show finance ") {
+        runShowFinance(command);
+    } else if (command.substr(0, 12) == "show finance"){
+        runShowFinance(command);
+    }  else if (command.substr(0, 5) == "show ") {
+        runShow(command);
+    }else if (command.substr(0, 4) == "show") {
         runShow(command);
     } else {
         invalid();
@@ -91,7 +97,7 @@ int Run::getNewPassword(std::string str, int pos) {
 }
 int Run::getUsername(std::string str, int pos) {
     for (int i = pos; i < str.length(); ++i) {
-        if (isprint(str[i])) {
+        if (isprint(str[i]) && str[i] != ' ') {
             continue;
         }
         if (str[i] == ' ') {
@@ -119,7 +125,7 @@ int Run::getPrivilege(std::string str, int pos) {
 }
 int Run::getISBN(std::string str, int pos) {
     for (int i = pos; i < str.length(); ++i) {
-        if (isprint(str[i])) {
+        if (isprint(str[i]) && str[i] != ' ') {
             continue;
         }
         if (str[i] == ' ') {
@@ -133,7 +139,7 @@ int Run::getISBN(std::string str, int pos) {
 }
 int Run::getBookName(std::string str, int pos) {
     for (int i = pos; i < str.length(); ++i) {
-        if (isprint(str[i]) && str[i] != '\"') {
+        if (isprint(str[i]) && str[i] != '\"' && str[i] != ' ') {
             continue;
         }
         if (str[i] == ' ') {
@@ -238,49 +244,59 @@ double Run::getDouble(std::string str) {
     return res;
 }
 
+const std::string preISBN = "-ISBN=";
+const std::string preName = "-name=\"";
+const std::string preAuthor = "-author=\"";
+const std::string preKeyword = "-keyword=\"";
+const std::string prePrice = "-price=";
+
 std::pair<ParamType, int> Run::getToken(std::string str, int pos) {
     if (str[pos] != '-') {
         return std::make_pair(kError, -1);
     }
-    if (str.substr(pos, 6) == "-ISBN=") {
+    // std::cout << '&' << str.substr(pos, 7) << std::endl;
+    // std::cout << '#' << preName << std::endl;
+    // std::cout << (str.substr(pos, 7) == preName) << std::endl;
+    if (str.substr(pos, 6) == preISBN) {
         int p1 = pos + 6;
         int p2 = getISBN(str, p1);
-        if (p1 + 1 == p2) {
+        if (p1 == p2) {
             return std::make_pair(kError, -1);
         }
         return std::make_pair(kISBN, p2);
     }
-    if (str.substr(pos, 7) == "-name=\"") {
+    if (str.substr(pos, 7) == preName) {
         int p1 = pos + 7;
         int p2 = getBookName(str, p1);
-        if (p2 >= -1 || p1 + 1 == -p2) {
+        // std::cout << '!' << p1 << ' ' << p2 << std::endl;
+        if (p2 >= -1 || p1 == -p2) {
             return std::make_pair(kError, -1);
         }
         return std::make_pair(kName, p2);
     }
-    if (str.substr(pos, 9) == "-author=\"") {
+    if (str.substr(pos, 9) == preAuthor) {
         int p1 = pos + 9;
-        int p2 = getBookName(str, p1);
-        if (p2 >= -1 || p1 + 1 == -p2) {
+        int p2 = getAuthor(str, p1);
+        if (p2 >= -1 || p1 == -p2) {
             return std::make_pair(kError, -1);
         }
         return std::make_pair(kAuthor, p2);
     }
-    if (str.substr(pos, 10) == "-keyword=\"") {
+    if (str.substr(pos, 10) == preKeyword) {
         int p1 = pos + 10;
         int p2 = getKeyword(str, p1);
-        if (p2 >= -1 || p1 + 1 == -p2) {
+        if (p2 >= -1 || p1 == -p2) {
             return std::make_pair(kError, -1);
         }
-        return std::make_pair(kName, p2);
+        return std::make_pair(kKeyword, p2);
     }
-    if (str.substr(pos, 7) == "-price=") {
+    if (str.substr(pos, 7) == prePrice) {
         int p1 = pos + 7;
         int p2 = getPrice(str, p1);
-        if (p1 + 1 == -p2) {
+        if (p1 == -p2) {
             return std::make_pair(kError, -1);
         }
-        return std::make_pair(kName, p2);
+        return std::make_pair(kPrice, p2);
     }
     return std::make_pair(kError, -1);
 }
@@ -327,12 +343,12 @@ void Run::runLogout(std::string command) {
 void Run::runRegister(std::string command) {
     int p1 = 8;
     int p2 = getUserID(command, p1 + 1);
-    if (p2 == -1) {
+    if (p2 == -1 || p2 == command.length()) {
         invalid();
         return;
     }
     int p3 = getPassword(command, p2 + 1);
-    if (p3 == -1) {
+    if (p3 == -1 || p3 == command.length()) {
         invalid();
         return;
     }
@@ -344,6 +360,7 @@ void Run::runRegister(std::string command) {
     String30 UserID = command.substr(p1 + 1, p2 - p1 - 1);
     String30 Password = command.substr(p2 + 1, p3 - p2 - 1);
     String30 UserName = command.substr(p3 + 1, p4 - p3 - 1);
+    // std::cout << UserID << ' ' << Password << ' ' << UserName << std::endl;
     if (!as.signup(UserID, Password, UserName)) {
         invalid();
         return;
@@ -356,7 +373,7 @@ void Run::runPasswd(std::string command) {
     }
     int p1 = 6;
     int p2 = getUserID(command, p1 + 1);
-    if (p2 == -1) {
+    if (p2 == -1 || p2 == command.length()) {
         invalid();
         return;
     }
@@ -370,6 +387,7 @@ void Run::runPasswd(std::string command) {
         String30 CurrentPassword;
         String30 NewPassword = command.substr(p2 + 1, p3 - p2 - 1);
         if (!as.changePassword(UserID, CurrentPassword, NewPassword)) {
+            // std::cout << "!" << std::endl;
             invalid();
             return;
         }
@@ -393,7 +411,7 @@ void Run::runUseradd(std::string command) {
         invalid();
         return;
     }
-    int p1 = 8;
+    int p1 = 7;
     int p2 = getUserID(command, p1 + 1);
     if (p2 == -1 || p2 == command.length()) {
         invalid();
@@ -441,10 +459,12 @@ void Run::runDelete(std::string command) {
     }
 }
 void Run::runShow(std::string command) {
+    // std::cout << "!" << command << std::endl;
     if (nowAccount.Privilege < 1) {
         invalid();
         return;
     }
+    // std::cout << command.length() << std::endl;
     if (command.length() == 4) {
         bs.show();
         return;
@@ -452,10 +472,12 @@ void Run::runShow(std::string command) {
     int p1 = 5;
     std::pair<ParamType, int> res = getToken(command, p1);
     if (res.first == kError || res.first == kPrice) {
+        // std::cout << "huh?" << std::endl;
         invalid();
         return;
     }
     if (res.first == kISBN) {
+        // std::cout << "GOOD" << std::endl;
         p1 += 6;
         int p2 = res.second;
         if (p2 != command.length()) {
@@ -502,7 +524,7 @@ void Run::runShow(std::string command) {
 void Run::runBuy(std::string command) {
     int p1 = 3;
     int p2 = getISBN(command, p1 + 1);
-    if (p2 == -1) {
+    if (p2 == -1 || p2 == command.length()) {
         invalid();
         return;
     }
@@ -541,7 +563,9 @@ void Run::runSelect(std::string command) {
     as.select(cur);
 }
 void Run::runModify(std::string command) {
+    // std::cout << "?!!!!" << std::endl;
     if (nowAccount.Privilege < 3) {
+        // std::cout << "?!" << std::endl;
         invalid();
         return;
     }
@@ -555,10 +579,12 @@ void Run::runModify(std::string command) {
     while (p1 < command.length()) {
         std::pair<ParamType, int> res = getToken(command, p1);
         if (res.first == kError) {
+            // std::cout << '?' << std::endl;
             invalid();
             return;
         }
         if (res.first == kISBN) {
+            // std::cout << "isbn" << std::endl;
             if (vis[0]) {
                 invalid();
                 return;
@@ -573,6 +599,7 @@ void Run::runModify(std::string command) {
             vec[0] = std::make_pair(kISBN, std::make_pair(p1, p2));
             p1 = p2 + 1;
         } else if (res.first == kName) {
+            // std::cout << "name" << std::endl;
             if (vis[1]) {
                 invalid();
                 return;
@@ -588,6 +615,7 @@ void Run::runModify(std::string command) {
             vec[1] = std::make_pair(kName, std::make_pair(p1, p2));
             p1 = p2 + 2;
         } else if (res.first == kAuthor) {
+            // std::cout << "author" << std::endl;
             if (vis[2]) {
                 invalid();
                 return;
@@ -603,6 +631,7 @@ void Run::runModify(std::string command) {
             vec[2] = std::make_pair(kAuthor, std::make_pair(p1, p2));
             p1 = p2 + 2;
         } else if (res.first == kKeyword) {
+            // std::cout << "keyword" << std::endl;
             if (vis[3]) {
                 invalid();
                 return;
@@ -611,6 +640,7 @@ void Run::runModify(std::string command) {
             p1 += 10;
             int p2 = res.second;
             p2 = -p2;
+            // std::cout << p1 << ' ' << p2 << std::endl;
             if (p2 == p1 || p2 == 1) {
                 invalid();
                 return;
@@ -619,6 +649,7 @@ void Run::runModify(std::string command) {
             std::string tmp = "";
             for (int i = p1; i < p2; ++i) {
                 if (command[i] == '|') {
+                    // std::cout << tmp << std::endl;
                     if (tmp.length() == 0) {
                         invalid();
                         return;
@@ -633,6 +664,7 @@ void Run::runModify(std::string command) {
                     tmp += command[i];
                 }
             }
+            // std::cout << tmp << std::endl;
             if (tmp.length() == 0) {
                 invalid();
                 return;
@@ -642,9 +674,10 @@ void Run::runModify(std::string command) {
                 return;
             }
             mp[tmp] = true;
-            vec[3] = std::make_pair(kAuthor, std::make_pair(p1, p2));
+            vec[3] = std::make_pair(kKeyword, std::make_pair(p1, p2));
             p1 = p2 + 2;
         } else {
+            // std::cout << "price" << std::endl;
             if (vis[4]) {
                 invalid();
                 return;
@@ -661,8 +694,10 @@ void Run::runModify(std::string command) {
             p1 = p2 + 1;
         }
     }
+    // std::cout << vis[0] << ' ' << vis[1] << ' ' << vis[2] << ' ' << vis[3] << ' ' << vis[4] << std::endl;
     if (vis[0]) {
         String20 ISBN = command.substr(vec[0].second.first, vec[0].second.second - vec[0].second.first);
+        // std::cout << "ISBN: " << ISBN << std::endl;
         if (!bs.modifyISBN(ISBN)) {
             invalid();
             return;
@@ -670,19 +705,22 @@ void Run::runModify(std::string command) {
     }
     for (int i = 1; i < 4; ++i) {
         if (vis[i]) {
-            auto now = vec[0];
+            auto now = vec[i];
             String60 tmp = command.substr(now.second.first, now.second.second - now.second.first);
             if (now.first == kName) {
+                // std::cout << "Name: " << tmp << std::endl;
                 if (!bs.modifyBookName(tmp)) {
                     invalid();
                     return;
                 }
             } else if (now.first == kAuthor) {
+                // std::cout << "Author: " << tmp << std::endl;
                 if (!bs.modifyAuthor(tmp)) {
                     invalid();
                     return;
                 }
             } else {
+                // std::cout << "Keyword: " << tmp << std::endl;
                 if (!bs.modifyKeyword(tmp)) {
                     invalid();
                     return;
@@ -691,6 +729,7 @@ void Run::runModify(std::string command) {
         }
     }
     if (vis[4]) {
+        // std::cout << "Price: " << Price << std::endl;
         if (!bs.modifyPrice(Price)) {
             invalid();
             return;
@@ -698,18 +737,25 @@ void Run::runModify(std::string command) {
     }
 }
 void Run::runImport(std::string command) {
-    int p1 = 6;
-    int p2 = getQuantity(command, p1 + 1);
-    if (p2 == -1) {
+    if (nowAccount.Privilege < 3) {
         invalid();
         return;
     }
-    int p3 = getQuantity(command, p2 + 1);
+    int p1 = 6;
+    int p2 = getQuantity(command, p1 + 1);
+    // std::cout << p2 << std::endl;
+    if (p2 == -1 || p2 == command.length()) {
+        invalid();
+        return;
+    }
+    int p3 = getTotalCost(command, p2 + 1);
+    // std::cout << p3 << std::endl;
     if (p3 != command.length()) {
         invalid();
         return;
     }
     std::string quantity = command.substr(p1 + 1, p2 - p1 - 1), totalCost = command.substr(p2 + 1, p3 - p2 - 1);
+    // std::cout << quantity << ' ' << totalCost << std::endl;
     int Quantity = getNumber(quantity);
     double TotalCost = getDouble(totalCost);
     if (Quantity < 0 || TotalCost < 0) {
@@ -723,8 +769,16 @@ void Run::runImport(std::string command) {
     ls.addLog(0, TotalCost);
 }
 void Run::runShowFinance(std::string command) {
+    // std::cout << '?' << std::endl;
     if (nowAccount.Privilege < 7) {
         invalid();
+        return;
+    }
+    if (command.length() == 12) {
+        // std::cout << "!!\n";
+        if (!ls.showFinance(-1)) {
+            invalid();
+        }
         return;
     }
     int p1 = 12;

@@ -243,7 +243,7 @@ double BookStorage::buy(String20 ISBN, size_t quantity) {
     if (!res.size()) {
         return -1;
     } else {
-        if (res[0].number < quantity) {
+        if (res[0].number < quantity || quantity == 0) {
             return -1;
         }
         std::cout << std::fixed << std::setprecision(2) << res[0].price * quantity << '\n';
@@ -277,7 +277,12 @@ bool BookStorage::modifyISBN(String20 ISBN) {
     if (!selected) {
         return false;
     }
+    // std::cout << ISBN << ' ' << current.ISBN << std::endl;
     if (ISBN == current.ISBN) {
+        return false;
+    }
+    std::vector<Book> res = blockList1.query(ISBN);
+    if (!res.empty()) {
         return false;
     }
     blockList1.mydelete(current.ISBN, current);
