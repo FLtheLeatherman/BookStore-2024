@@ -38,13 +38,13 @@ public:
 class AccountStorage {
 private:
     BlockList<String30, Account> blockList;
-    std::vector<std::pair<Account, Book>> userStack;
+    std::vector<std::pair<Account, int>> userStack;
 public:
     void initialize();
     ~AccountStorage() = default;
-    void select(Book book);
+    void select(int id);
     Account getAccount();
-    Book getSelect();
+    int getSelect();
     bool login(String30 UserID, String30 Password);
     bool logout();
     bool signup(String30 UserID, String30 Password, String30 Username);

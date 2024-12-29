@@ -94,8 +94,8 @@ void AccountStorage::initialize() {
         blockList.insert(root.UserID, root);
     }
 }
-void AccountStorage::select(Book book) {
-    userStack.back().second = book;
+void AccountStorage::select(int id) {
+    userStack.back().second = id;
 }
 Account AccountStorage::getAccount() {
     if (!userStack.size()) {
@@ -103,9 +103,9 @@ Account AccountStorage::getAccount() {
     }
     return userStack.back().first;
 }
-Book AccountStorage::getSelect() {
+int AccountStorage::getSelect() {
     if (!userStack.size()) {
-        return Book();
+        return -1;
     }
     return userStack.back().second;
 }
@@ -124,7 +124,7 @@ bool AccountStorage::login(String30 UserID, String30 Password) {
         }
     }
     // std::cout << "login" << res[0] << std::endl;
-    userStack.push_back(std::make_pair(res[0], Book()));
+    userStack.push_back(std::make_pair(res[0], -1));
     return true;
 }
 bool AccountStorage::logout() {

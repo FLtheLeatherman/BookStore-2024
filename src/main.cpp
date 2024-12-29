@@ -65,20 +65,41 @@
 
 /***********file storage test***********/
 
+std::string command;
+bool read() {
+    command = "";
+    char ch;
+    while (std::cin.get(ch)) {
+        if (ch == '\r' || ch == '\n') {
+            return true;
+        }
+        command += ch;
+    }
+    return false;
+}
+
 int main() {
-    // freopen("testcase6.in", "r", stdin);
-    // freopen("testcase6.out", "w", stdout);
+    // freopen("test.in", "r", stdin);
+    // freopen("test.out", "w", stdout);
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr), std::cout.tie(nullptr);
     std::cout << std::fixed << std::setprecision(2);
     Run exe;
     exe.initialize();
-    std::string str;
     while (true) {
-        getline(std::cin, str);
-        if (str == "quit" || str == "exit") {
+        bool flag = read();
+        if (!command.size()) {
+            if (!flag) {
+                break;
+            }
+            continue;
+        }
+        if (command == "quit" || command == "exit") {
             break;
         }
-        else exe.run(str);
+        else exe.run(command);
+        if (!flag) {
+            break;
+        }
     }
 }

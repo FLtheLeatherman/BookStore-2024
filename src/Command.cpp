@@ -338,7 +338,7 @@ void Run::runLogout(std::string command) {
         return;
     }
     nowAccount = as.getAccount();
-    bs.select(as.getSelect().ISBN);
+    bs.select(as.getSelect());
 }
 void Run::runRegister(std::string command) {
     int p1 = 8;
@@ -554,12 +554,12 @@ void Run::runSelect(std::string command) {
     }
     int p1 = 6;
     int p2 = getISBN(command, p1 + 1);
-    if (p2 != command.length()) {
+    if (p2 != command.length() || p2 == p1 + 1) {
         invalid();
         return;
     }
     String20 ISBN = command.substr(p1 + 1, p2 - p1 - 1);
-    Book cur = bs.select(ISBN);
+    int cur = bs.select(ISBN);
     as.select(cur);
 }
 void Run::runModify(std::string command) {

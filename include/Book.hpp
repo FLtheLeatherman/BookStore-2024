@@ -5,6 +5,7 @@
 #include <string>
 #include <iostream>
 #include "BlockList.hpp"
+#include "MemoryRiver.hpp"
 
 class String20 {
 private:
@@ -42,12 +43,13 @@ public:
 
 class Book {
 public:
+    int id;
     String20 ISBN;
     String60 BookName, Author, Keyword;
     size_t number;
     double price;
     Book();
-    Book(String20 ISBN, String60 BookName, String60 Author, String60 Keyword, size_t number, double price);
+    Book(int id, String20 ISBN, String60 BookName, String60 Author, String60 Keyword, size_t number, double price);
     bool operator <(const Book &);
     bool operator ==(const Book &);
     friend std::ostream& operator <<(std::ostream &, const Book &);
@@ -55,12 +57,13 @@ public:
 
 class BookStorage {
 private:
-    BlockList<String20, Book> blockList1; // ISBN -> Book
-    BlockList<String60, String20> blockList2; // BookName -> ISBN
-    BlockList<String60, String20> blockList3; // Author -> ISBN
-    BlockList<String60, String20> blockList4; // Keyword -> ISBN
+    MemoryRiver<Book, 1> books; // id -> Book
+    BlockList<String20, int> blockList1; // ISBN -> id
+    BlockList<String60, int> blockList2; // BookName -> id
+    BlockList<String60, int> blockList3; // Author -> id
+    BlockList<String60, int> blockList4; // Keyword -> id
     bool selected;
-    Book current;
+    int current;
 public:
     void initialize();
     ~BookStorage() = default;
@@ -70,7 +73,8 @@ public:
     void showAuthor(String60 Author);
     bool showKeyword(String60 Keyword);
     double buy(String20 ISBN, size_t quantity);
-    Book select(String20 ISBN);
+    void select(int id);
+    int select(String20 ISBN);
     bool modifyISBN(String20 ISBN);
     bool modifyBookName(String60 BookName);
     bool modifyAuthor(String60 Author);

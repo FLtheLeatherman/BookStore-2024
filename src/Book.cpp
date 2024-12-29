@@ -132,6 +132,7 @@ std::ostream& operator <<(std::ostream &out, const String60 &str) {
 }
 
 Book::Book() {
+    id = 0;
     ISBN = String20();
     BookName = String60();
     Author = String60();
@@ -139,7 +140,8 @@ Book::Book() {
     number = 0;
     price = 0;
 }
-Book::Book(String20 ISBN, String60 BookName, String60 Author, String60 Keyword, size_t number, double price) {
+Book::Book(int id, String20 ISBN, String60 BookName, String60 Author, String60 Keyword, size_t number, double price) {
+    this->id = id;
     this->ISBN = ISBN;
     this->BookName = BookName;
     this->Author = Author;
@@ -169,6 +171,7 @@ std::ostream& operator <<(std::ostream &out, const Book& book) {
 }
 
 void BookStorage::initialize() {
+    books.initialize("Books");
     blockList1.initialize("ISBN");
     // std::cout << "GOOD1" << std::endl;
     blockList2.initialize("BookName");
@@ -180,97 +183,132 @@ void BookStorage::initialize() {
     selected = false;
 }
 void BookStorage::show() {
-    std::vector<Book> res = blockList1.show();
-    if (res.empty()) {
+    std::vector<Book> res = books.show();
+    // std::cout << res.size() << std::endl;
+    sort(res.begin(), res.end());
+    if (!res.size()) {
         std::cout << '\n';
     } else {
-        for (Book b: res) {
-            std::cout << b << '\n';
+        for (size_t i = 0; i < res.size(); ++i) {
+            std::cout << res[i] << '\n';
         }
     }
 }
 void BookStorage::showISBN(String20 ISBN) {
-    std::vector<Book> res = blockList1.query(ISBN);
+    std::vector<int> res = blockList1.query(ISBN);
     if (res.empty()) {
         std::cout << '\n';
     } else {
-        std::cout << res[0] << '\n';
+        Book res2;
+        books.read(res2, res[0]);
+        std::cout << res2 << '\n';
     }
 }
 void BookStorage::showBookName(String60 BookName) {
-    std::vector<String20> res = blockList2.query(BookName);
-    std::sort(res.begin(), res.end());
+    std::vector<int> res = blockList2.query(BookName);
     if (res.empty()) {
         std::cout << '\n';
     } else {
-        for (String20 ISBN: res) {
-            showISBN(ISBN);
+        std::vector<Book> res2;
+        for (size_t i = 0; i < res.size(); ++i) {
+            Book tmp;
+            books.read(tmp, res[i]);
+            res2.push_back(tmp);
+        }
+        sort(res2.begin(), res2.end());
+        for (size_t i = 0; i < res.size(); ++i) {
+            std::cout << res2[i] << '\n';
         }
     }
 }
 void BookStorage::showAuthor(String60 Author) {
-    std::vector<String20> res = blockList3.query(Author);
-    std::sort(res.begin(), res.end());
+    std::vector<int> res = blockList3.query(Author);
     if (res.empty()) {
         std::cout << '\n';
     } else {
-        for (String20 ISBN: res) {
-            showISBN(ISBN);
+        std::vector<Book> res2;
+        for (size_t i = 0; i < res.size(); ++i) {
+            Book tmp;
+            books.read(tmp, res[i]);
+            res2.push_back(tmp);
+        }
+        sort(res2.begin(), res2.end());
+        for (size_t i = 0; i < res.size(); ++i) {
+            std::cout << res2[i] << '\n';
         }
     }
 }
 bool BookStorage::showKeyword(String60 Keyword) {
     int len = Keyword.getLen();
     std::array<char, 60> str = Keyword.getValue();
-    for (size_t i = 0; i < len; ++i) {
+    for (int i = 0; i < len; ++i) {
         if (str[i] == '|') {
             return false;
         }
     }
-    std::vector<String20> res = blockList4.query(Keyword);
-    std::sort(res.begin(), res.end());
+    std::vector<int> res = blockList4.query(Keyword);
     if (res.empty()) {
         std::cout << '\n';
     } else {
-        for (String20 ISBN: res) {
-            showISBN(ISBN);
+        std::vector<Book> res2;
+        for (size_t i = 0; i < res.size(); ++i) {
+            Book tmp;
+            books.read(tmp, res[i]);
+            res2.push_back(tmp);
+        }
+        sort(res2.begin(), res2.end());
+        for (size_t i = 0; i < res.size(); ++i) {
+            std::cout << res2[i] << '\n';
         }
     }
     return true;
 }
 double BookStorage::buy(String20 ISBN, size_t quantity) {
-    std::vector<Book> res = blockList1.query(ISBN);
+    std::vector<int> res = blockList1.query(ISBN);
     if (!res.size()) {
         return -1;
     } else {
-        if (res[0].number < quantity || quantity == 0) {
+        Book now;
+        books.read(now, res[0]);
+        if (now.number < quantity || quantity == 0) {
             return -1;
         }
-        std::cout << std::fixed << std::setprecision(2) << res[0].price * quantity << '\n';
-        blockList1.mydelete(ISBN, res[0]);
-        res[0].number -= quantity;
-        blockList1.insert(ISBN, res[0]);
-        return res[0].price * quantity;
+        std::cout << std::fixed << std::setprecision(2) << now.price * quantity << '\n';
+        now.number -= quantity;
+        books.write(now, res[0]);
+        return now.price * quantity;
     }
 }
-Book BookStorage::select(String20 ISBN) {
-    if (!ISBN.getLen()) {
+void BookStorage::select(int id) {
+    if (id == -1) {
         selected = false;
-        current = Book();
-        return current;
+    } else {
+        selected = true;
     }
-    std::vector<Book> res = blockList1.query(ISBN);
+    current = id;
+}
+int BookStorage::select(String20 ISBN) {
+    if (!ISBN.getLen()) {
+        return -1;
+    }
+    std::vector<int> res = blockList1.query(ISBN);
     if (!res.size()) {
         Book tmp;
+        books.get_info(tmp.id, 1);
+        // std::cout << "o:" << tmp.id << std::endl;
+        tmp.id++;
+        books.write_info(tmp.id, 1);
         tmp.ISBN = ISBN;
-        blockList1.insert(ISBN, tmp);
-        blockList2.insert(String60(), ISBN);
-        blockList3.insert(String60(), ISBN);
-        blockList4.insert(String60(), ISBN);
-        res.push_back(tmp);
+        blockList1.insert(ISBN, tmp.id);
+        blockList2.insert(String60(), tmp.id);
+        blockList3.insert(String60(), tmp.id);
+        blockList4.insert(String60(), tmp.id);
+        res.push_back(tmp.id);
+        books.write(tmp, tmp.id);
     }
     selected = true;
     current = res[0];
+    // std::cout << current << std::endl;
     return current;
 }
 bool BookStorage::modifyISBN(String20 ISBN) {
@@ -278,115 +316,97 @@ bool BookStorage::modifyISBN(String20 ISBN) {
         return false;
     }
     // std::cout << ISBN << ' ' << current.ISBN << std::endl;
-    if (ISBN == current.ISBN) {
+    Book now;
+    books.read(now, current);
+    if (ISBN == now.ISBN) {
         return false;
     }
-    std::vector<Book> res = blockList1.query(ISBN);
-    if (!res.empty()) {
+    std::vector<int> tmp = blockList1.query(ISBN);
+    if (tmp.size()) {
         return false;
     }
-    blockList1.mydelete(current.ISBN, current);
-    blockList2.mydelete(current.BookName, current.ISBN);
-    blockList3.mydelete(current.Author, current.ISBN);
-    int len = current.Keyword.getLen();
-    std::array<char, 60> Keyword = current.Keyword.getValue();
-    std::string tmp = "";
-    for (int i = 0; i < len; ++i) {
-        if (Keyword[i] == '|') {
-            blockList4.mydelete(String60(tmp), current.ISBN);
-            tmp = "";
-        } else {
-            tmp += Keyword[i];
-        }
-    }
-    blockList4.mydelete(String60(tmp), current.ISBN);
-    tmp = "";
-    current.ISBN = ISBN;
-    blockList1.insert(current.ISBN, current);
-    blockList2.insert(current.BookName, current.ISBN);
-    blockList3.insert(current.Author, current.ISBN);
-    for (int i = 0; i < len; ++i) {
-        if (Keyword[i] == '|') {
-            blockList4.insert(String60(tmp), current.ISBN);
-            tmp = "";
-        } else {
-            tmp += Keyword[i];
-        }
-    }
-    blockList4.insert(String60(tmp), current.ISBN);
-    tmp = "";
+    blockList1.mydelete(now.ISBN, current);
+    now.ISBN = ISBN;
+    blockList1.insert(now.ISBN, current);
+    books.write(now, current);
     return true;
 }
 bool BookStorage::modifyBookName(String60 BookName) {
     if (!selected) {
         return false;
     }
-    blockList1.mydelete(current.ISBN, current);
-    blockList2.mydelete(current.BookName, current.ISBN);
-    current.BookName = BookName;
-    blockList1.insert(current.ISBN, current);
-    blockList2.insert(current.BookName, current.ISBN);
+    Book now;
+    books.read(now, current);
+    // std::cout << "!" << now.id << std::endl;
+    blockList2.mydelete(now.BookName, current);
+    now.BookName = BookName;
+    blockList2.insert(now.BookName, current);
+    books.write(now, current);
     return true;
 }
 bool BookStorage::modifyAuthor(String60 Author) {
     if (!selected) {
         return false;
     }
-    blockList1.mydelete(current.ISBN, current);
-    blockList3.mydelete(current.Author, current.ISBN);
-    current.Author = Author;
-    blockList1.insert(current.ISBN, current);
-    blockList3.insert(current.Author, current.ISBN);
+    Book now;
+    books.read(now, current);
+    blockList3.mydelete(now.Author, current);
+    now.Author = Author;
+    blockList3.insert(now.Author, current);
+    books.write(now, current);
     return true;
 }
 bool BookStorage::modifyKeyword(String60 Keyword) {
     if (!selected) {
         return false;
     }
-    blockList1.mydelete(current.ISBN, current);
-    int len = current.Keyword.getLen();
-    std::array<char, 60> keyword = current.Keyword.getValue();
+    Book now;
+    books.read(now, current);
+    int len = now.Keyword.getLen();
+    std::array<char, 60> keyword = now.Keyword.getValue();
     std::string tmp = "";
     for (int i = 0; i < len; ++i) {
         if (keyword[i] == '|') {
-            blockList4.mydelete(String60(tmp), current.ISBN);
+            blockList4.mydelete(String60(tmp), current);
             tmp = "";
         } else {
             tmp += keyword[i];
         }
     }
-    blockList4.mydelete(String60(tmp), current.ISBN);
+    blockList4.mydelete(String60(tmp), current);
     tmp = "";
-    current.Keyword = Keyword;
-    blockList1.insert(current.ISBN, current);
-    len = current.Keyword.getLen();
-    keyword = current.Keyword.getValue();
+    now.Keyword = Keyword;
+    len = now.Keyword.getLen();
+    keyword = now.Keyword.getValue();
     for (int i = 0; i < len; ++i) {
         if (keyword[i] == '|') {
-            blockList4.insert(String60(tmp), current.ISBN);
+            blockList4.insert(String60(tmp), current);
             tmp = "";
         } else {
             tmp += keyword[i];
         }
     }
-    blockList4.insert(String60(tmp), current.ISBN);
+    blockList4.insert(String60(tmp), current);
+    books.write(now, current);
     return true;
 }
 bool BookStorage::modifyPrice(double price) {
     if (!selected) {
         return false;
     }
-    blockList1.mydelete(current.ISBN, current);
-    current.price = price;
-    blockList1.insert(current.ISBN, current);
+    Book now;
+    books.read(now, current);
+    now.price = price;
+    books.write(now, current);
     return true;
 }
 bool BookStorage::import(size_t quantity) {
     if (!selected) {
         return false;
     }
-    blockList1.mydelete(current.ISBN, current);
-    current.number += quantity;
-    blockList1.insert(current.ISBN, current);
+    Book now;
+    books.read(now, current);
+    now.number += quantity;
+    books.write(now, current);
     return true;
 }
