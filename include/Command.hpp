@@ -6,6 +6,10 @@
 #include "Book.hpp"
 #include "Log.hpp"
 
+enum ParamType {
+    kISBN, kName, kAuthor, kKeyword, kPrice, kError
+};
+
 class Run {
 private:
     AccountStorage as;
@@ -14,8 +18,11 @@ private:
     Account nowAccount;
 public:
     void initialize();
+    ~Run() = default;
 
     void invalid();
+
+    void format(std::string &);
 
     void run(std::string);
 
@@ -33,6 +40,11 @@ public:
     int getPrice(std::string, int);
     int getTotalCost(std::string, int);
     int getCount(std::string, int);
+
+    int getNumber(std::string);
+    double getDouble(std::string);
+
+    std::pair<ParamType, int> getToken(std::string, int);
 
     void runSu(std::string);
     void runLogout(std::string);

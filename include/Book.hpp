@@ -69,8 +69,8 @@ public:
     void showBookName(String60 BookName);
     void showAuthor(String60 Author);
     bool showKeyword(String60 Keyword);
-    bool buy(String20 ISBN, size_t quantity);
-    void select(String20 ISBN);
+    double buy(String20 ISBN, size_t quantity);
+    Book select(String20 ISBN);
     bool modifyISBN(String20 ISBN);
     bool modifyBookName(String60 BookName);
     bool modifyAuthor(String60 Author);

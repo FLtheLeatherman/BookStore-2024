@@ -177,6 +177,7 @@ void BookStorage::initialize() {
     // std::cout << "GOOD3" << std::endl;
     blockList4.initialize("Keyword");
     // std::cout << "GOOD4" << std::endl;
+    selected = false;
 }
 void BookStorage::show() {
     std::vector<Book> res = blockList1.show();
@@ -237,22 +238,27 @@ bool BookStorage::showKeyword(String60 Keyword) {
     }
     return true;
 }
-bool BookStorage::buy(String20 ISBN, size_t quantity) {
+double BookStorage::buy(String20 ISBN, size_t quantity) {
     std::vector<Book> res = blockList1.query(ISBN);
     if (!res.size()) {
-        return false;
+        return -1;
     } else {
         if (res[0].number < quantity) {
-            return false;
+            return -1;
         }
         std::cout << std::fixed << std::setprecision(2) << res[0].price * quantity << '\n';
         blockList1.mydelete(ISBN, res[0]);
         res[0].number -= quantity;
         blockList1.insert(ISBN, res[0]);
-        return true;
+        return res[0].price * quantity;
     }
 }
-void BookStorage::select(String20 ISBN) {
+Book BookStorage::select(String20 ISBN) {
+    if (!ISBN.getLen()) {
+        selected = false;
+        current = Book();
+        return current;
+    }
     std::vector<Book> res = blockList1.query(ISBN);
     if (!res.size()) {
         Book tmp;
@@ -261,9 +267,11 @@ void BookStorage::select(String20 ISBN) {
         blockList2.insert(String60(), ISBN);
         blockList3.insert(String60(), ISBN);
         blockList4.insert(String60(), ISBN);
+        res.push_back(tmp);
     }
     selected = true;
     current = res[0];
+    return current;
 }
 bool BookStorage::modifyISBN(String20 ISBN) {
     if (!selected) {

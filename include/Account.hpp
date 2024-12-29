@@ -43,6 +43,7 @@ public:
     void initialize();
     ~AccountStorage() = default;
     void select(Book book);
+    Account getAccount();
     Book getSelect();
     bool login(String30 UserID, String30 Password);
     bool logout();
