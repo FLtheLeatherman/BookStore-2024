@@ -66,8 +66,8 @@
 /***********file storage test***********/
 
 int main() {
-    freopen("testcase6.in", "r", stdin);
-    freopen("testcase6.out", "w", stdout);
+    // freopen("testcase6.in", "r", stdin);
+    // freopen("testcase6.out", "w", stdout);
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr), std::cout.tie(nullptr);
     std::cout << std::fixed << std::setprecision(2);
