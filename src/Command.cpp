@@ -87,10 +87,10 @@ void Run::run(std::string command) {
             assert(0);
             runShowFinance(command);
         } else if (command.substr(0, 5) == "show ") {
-            assert(0);
+            // assert(0);
             runShow(command);
         } else if (command.substr(0, 4) == "show") {
-            assert(0);
+            // assert(0);
             runShow(command);
         } else {
             invalid();
