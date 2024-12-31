@@ -124,10 +124,7 @@ bool AccountStorage::login(String30 UserID, String30 Password) {
             return false;
         }
     } else {
-        if (userStack.empty()) {
-            return false;
-        }
-        if (userStack.back().first.Privilege <= res[0].Privilege) {
+        if (userStack.empty() || userStack.back().first.Privilege <= res[0].Privilege) {
             return false;
         }
     }
@@ -160,10 +157,7 @@ bool AccountStorage::changePassword(String30 UserID, String30 CurrentPassword, S
             return false;
         }
     } else {
-        if (userStack.empty()) {
-            return false;
-        }
-        if (userStack.back().first.Privilege < 7) {
+        if (userStack.empty() || userStack.back().first.Privilege < 7) {
             return false;
         }
     }
@@ -173,10 +167,7 @@ bool AccountStorage::changePassword(String30 UserID, String30 CurrentPassword, S
     return true;
 }
 bool AccountStorage::useradd(String30 UserID, String30 Password, int Privilege, String30 Username) {
-    if (userStack.empty()) {
-        return false;
-    }
-    if (userStack.back().first.Privilege <= Privilege) {
+    if (userStack.empty() || userStack.back().first.Privilege <= Privilege || Privilege == 0) {
         return false;
     }
     std::vector<Account> res = blockList.query(UserID);

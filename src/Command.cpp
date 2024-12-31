@@ -262,7 +262,6 @@ const std::string preName = "-name=\"";
 const std::string preAuthor = "-author=\"";
 const std::string preKeyword = "-keyword=\"";
 const std::string prePrice = "-price=";
-
 std::pair<ParamType, int> Run::getToken(std::string str, int pos) {
     if (pos >= str.size()) {
         return std::make_pair(kError, -1);
@@ -320,10 +319,6 @@ void Run::runSu(std::string command) {
         invalid();
         return;
     }
-    if (p1 == command.length()) {
-        invalid();
-        return;
-    }
     if (p2 == command.length()) {
         String30 UserID = command.substr(p1 + 1, p2 - p1 - 1), Password;
         if (!as.login(UserID, Password)) {
@@ -373,10 +368,6 @@ void Run::runRegister(std::string command) {
         invalid();
         return;
     }
-    if (p1 == command.length()) {
-        invalid();
-        return;
-    }
     String30 UserID = command.substr(p1 + 1, p2 - p1 - 1);
     String30 Password = command.substr(p2 + 1, p3 - p2 - 1);
     String30 UserName = command.substr(p3 + 1, p4 - p3 - 1);
@@ -391,10 +382,6 @@ void Run::runPasswd(std::string command) {
         return;
     }
     int p1 = 6;
-    if (p1 == command.length()) {
-        invalid();
-        return;
-    }
     int p2 = getUserID(command, p1 + 1);
     if (p2 == -1 || p2 == command.length()) {
         invalid();
@@ -454,10 +441,6 @@ void Run::runUseradd(std::string command) {
         invalid();
         return;
     }
-    if (p1 == command.length()) {
-        invalid();
-        return;
-    }
     String30 UserID = command.substr(p1 + 1, p2 - p1 - 1);
     String30 Password = command.substr(p2 + 1, p3 - p2 - 1);
     int Privilege = command[p3 + 1] - '0';
@@ -475,10 +458,6 @@ void Run::runDelete(std::string command) {
     int p1 = 6;
     int p2 = getUserID(command, p1 + 1);
     if (p2 != command.length()) {
-        invalid();
-        return;
-    }
-    if (p1 == command.length()) {
         invalid();
         return;
     }
@@ -585,10 +564,6 @@ void Run::runBuy(std::string command) {
         invalid();
         return;
     }
-    if (p1 == command.length()) {
-        invalid();
-        return;
-    }
     String20 ISBN = command.substr(p1 + 1, p2 - p1 - 1);
     double income = bs.buy(ISBN, Quantity);
     if (income < 0) {
@@ -605,10 +580,6 @@ void Run::runSelect(std::string command) {
     int p1 = 6;
     int p2 = getISBN(command, p1 + 1);
     if (p2 != command.length() || p2 == p1 + 1) {
-        invalid();
-        return;
-    }
-    if (p1 == command.length()) {
         invalid();
         return;
     }
@@ -812,10 +783,6 @@ void Run::runImport(std::string command) {
         invalid();
         return;
     }
-    if (p1 == command.length()) {
-        invalid();
-        return;
-    }
     std::string quantity = command.substr(p1 + 1, p2 - p1 - 1), totalCost = command.substr(p2 + 1, p3 - p2 - 1);
     int Quantity = getNumber(quantity);
     double TotalCost = getDouble(totalCost);
@@ -843,10 +810,6 @@ void Run::runShowFinance(std::string command) {
     int p1 = 12;
     int p2 = getCount(command, p1 + 1);
     if (p2 != command.length()) {
-        invalid();
-        return;
-    }
-    if (p1 == command.length()) {
         invalid();
         return;
     }
