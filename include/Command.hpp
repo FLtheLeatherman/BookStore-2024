@@ -10,6 +10,13 @@ enum ParamType {
     kISBN, kName, kAuthor, kKeyword, kPrice, kError
 };
 
+class Invalid : std::exception {
+public:
+    const char *what() const noexcept override {
+        return "Invalid\n";
+    }
+};
+
 class Run {
 private:
     AccountStorage as;
@@ -19,8 +26,6 @@ private:
 public:
     void initialize();
     ~Run() = default;
-
-    void invalid();
 
     void run(std::string);
 

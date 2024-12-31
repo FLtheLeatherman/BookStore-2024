@@ -12,45 +12,44 @@ void Run::initialize() {
     ls.initialize();
 }
 
-void Run::invalid() {
-    std::cout << "Invalid" << std::endl;
-}
-
 void Run::run(std::string command) {
-    if (!command.length()) {
-        invalid();
-        return;
-    }
-    if (command.substr(0, 3) == "su ") {
-        runSu(command);
-    } else if (command.substr(0, 6) == "logout") {
-        runLogout(command);
-    } else if (command.substr(0, 9) == "register ") {
-        runRegister(command);
-    } else if (command.substr(0, 7) == "passwd ") {
-        runPasswd(command);
-    } else if (command.substr(0, 8) == "useradd ") {
-        runUseradd(command);
-    } else if (command.substr(0, 7) == "delete ") {
-        runDelete(command);
-    } else if (command.substr(0, 4) == "buy ") {
-        runBuy(command);
-    } else if (command.substr(0, 7) == "select ") {
-        runSelect(command);
-    } else if (command.substr(0, 7) == "modify ") {
-        runModify(command);
-    } else if (command.substr(0, 7) == "import ") {
-        runImport(command);
-    } else if (command.substr(0, 13) == "show finance ") {
-        runShowFinance(command);
-    } else if (command.substr(0, 12) == "show finance"){
-        runShowFinance(command);
-    } else if (command.substr(0, 5) == "show ") {
-        runShow(command);
-    } else if (command.substr(0, 4) == "show") {
-        runShow(command);
-    } else {
-        invalid();
+    try {
+        if (!command.length()) {
+            throw Invalid();
+        }
+        if (command.substr(0, 3) == "su ") {
+            runSu(command);
+        } else if (command.substr(0, 6) == "logout") {
+            runLogout(command);
+        } else if (command.substr(0, 9) == "register ") {
+            runRegister(command);
+        } else if (command.substr(0, 7) == "passwd ") {
+            runPasswd(command);
+        } else if (command.substr(0, 8) == "useradd ") {
+            runUseradd(command);
+        } else if (command.substr(0, 7) == "delete ") {
+            runDelete(command);
+        } else if (command.substr(0, 4) == "buy ") {
+            runBuy(command);
+        } else if (command.substr(0, 7) == "select ") {
+            runSelect(command);
+        } else if (command.substr(0, 7) == "modify ") {
+            runModify(command);
+        } else if (command.substr(0, 7) == "import ") {
+            runImport(command);
+        } else if (command.substr(0, 13) == "show finance ") {
+            runShowFinance(command);
+        } else if (command.substr(0, 12) == "show finance"){
+            runShowFinance(command);
+        } else if (command.substr(0, 5) == "show ") {
+            runShow(command);
+        } else if (command.substr(0, 4) == "show") {
+            runShow(command);
+        } else {
+            throw Invalid();
+        }
+    } catch (const Invalid &ex) {
+        std::cout << ex.what();
     }
 }
 
@@ -316,37 +315,31 @@ void Run::runSu(std::string command) {
     int p1 = 2;
     int p2 = getUserID(command, p1 + 1);
     if (p2 == -1) {
-        invalid();
-        return;
+        throw Invalid();
     }
     if (p2 == command.length()) {
         String30 UserID = command.substr(p1 + 1, p2 - p1 - 1), Password;
         if (!as.login(UserID, Password)) {
-            invalid();
-            return;
+            throw Invalid();
         }
     } else {
         int p3 = getPassword(command, p2 + 1);
         if (p3 != command.length()) {
-            invalid();
-            return;
+            throw Invalid();
         }
         String30 UserID = command.substr(p1 + 1, p2 - p1 - 1), Password = command.substr(p2 + 1, p3 - p2 - 1);
         if (!as.login(UserID, Password)) {
-            invalid();
-            return;
+            throw Invalid();
         }
         nowAccount = as.getAccount();
     }
 }
 void Run::runLogout(std::string command) {
     if (nowAccount.Privilege < 1) {
-        invalid();
-        return;
+        throw Invalid();
     }
     if (!as.logout()) {
-        invalid();
-        return;
+        throw Invalid();
     }
     nowAccount = as.getAccount();
     bs.select(as.getSelect());
@@ -355,122 +348,102 @@ void Run::runRegister(std::string command) {
     int p1 = 8;
     int p2 = getUserID(command, p1 + 1);
     if (p2 == -1 || p2 == command.length()) {
-        invalid();
-        return;
+        throw Invalid();
     }
     int p3 = getPassword(command, p2 + 1);
     if (p3 == -1 || p3 == command.length()) {
-        invalid();
-        return;
+        throw Invalid();
     }
     int p4 = getUsername(command, p3 + 1);
     if (p4 != command.length()) {
-        invalid();
-        return;
+        throw Invalid();
     }
     String30 UserID = command.substr(p1 + 1, p2 - p1 - 1);
     String30 Password = command.substr(p2 + 1, p3 - p2 - 1);
     String30 UserName = command.substr(p3 + 1, p4 - p3 - 1);
     if (!as.signup(UserID, Password, UserName)) {
-        invalid();
-        return;
+        throw Invalid();
     }
 }
 void Run::runPasswd(std::string command) {
     if (nowAccount.Privilege < 1) {
-        invalid();
-        return;
+        throw Invalid();
     }
     int p1 = 6;
     int p2 = getUserID(command, p1 + 1);
     if (p2 == -1 || p2 == command.length()) {
-        invalid();
-        return;
+        throw Invalid();
     }
     int p3 = getCurrentPassword(command, p2 + 1);
     if (p3 == -1) {
-        invalid();
-        return;
+        throw Invalid();
     }
     if (p3 == command.length()) {
         String30 UserID = command.substr(p1 + 1, p2 - p1 - 1);
         String30 CurrentPassword;
         String30 NewPassword = command.substr(p2 + 1, p3 - p2 - 1);
         if (!as.changePassword(UserID, CurrentPassword, NewPassword)) {
-            invalid();
-            return;
+            throw Invalid();
         }
     } else {
         int p4 = getNewPassword(command, p3 + 1);
         if (p4 != command.length()) {
-            invalid();
-            return;
+            throw Invalid();
         }
         String30 UserID = command.substr(p1 + 1, p2 - p1 - 1);
         String30 CurrentPassword = command.substr(p2 + 1, p3 - p2 - 1);
         String30 NewPassword = command.substr(p3 + 1, p4 - p3 - 1);
         if (!as.changePassword(UserID, CurrentPassword, NewPassword)) {
-            invalid();
-            return;
+            throw Invalid();
         }
     }
 }
 void Run::runUseradd(std::string command) {
     if (nowAccount.Privilege < 3) {
-        invalid();
-        return;
+        throw Invalid();
     }
     int p1 = 7;
     int p2 = getUserID(command, p1 + 1);
     if (p2 == -1 || p2 == command.length()) {
-        invalid();
-        return;
+        throw Invalid();
     }
     int p3 = getPassword(command, p2 + 1);
     if (p3 == -1 || p3 == command.length()) {
-        invalid();
-        return;
+        throw Invalid();
     }
     int p4 = getPrivilege(command, p3 + 1);
     if (p4 == -1 || p4 == command.length()) {
-        invalid();
-        return;
+        throw Invalid();
     }
     int p5 = getUsername(command, p4 + 1);
     if (p5 != command.length()) {
-        invalid();
-        return;
+        throw Invalid();
     }
     String30 UserID = command.substr(p1 + 1, p2 - p1 - 1);
     String30 Password = command.substr(p2 + 1, p3 - p2 - 1);
     int Privilege = command[p3 + 1] - '0';
     String30 UserName = command.substr(p4 + 1, p5 - p4 - 1);
     if (!as.useradd(UserID, Password, Privilege, UserName)) {
-        invalid();
-        return;
+        throw Invalid();
     }
 }
 void Run::runDelete(std::string command) {
     if (nowAccount.Privilege < 7) {
-        invalid();
-        return;
+        throw Invalid();
     }
     int p1 = 6;
     int p2 = getUserID(command, p1 + 1);
     if (p2 != command.length()) {
-        invalid();
-        return;
+        throw Invalid();
     }
     String30 UserID = command.substr(p1 + 1, p2 - p1 - 1);
     if (!as.deleteUser(UserID)) {
-        invalid();
-        return;
+        throw Invalid();
     }
 }
 void Run::runShow(std::string command) {
     if (nowAccount.Privilege < 1) {
-        invalid();
-        return;
+        throw Invalid();
     }
     if (command.length() == 4) {
         bs.show();
@@ -479,19 +452,16 @@ void Run::runShow(std::string command) {
     int p1 = 5;
     std::pair<ParamType, int> res = getToken(command, p1);
     if (res.first == kError || res.first == kPrice) {
-        invalid();
-        return;
+        throw Invalid();
     }
     if (res.first == kISBN) {
         p1 += 6;
         int p2 = res.second;
         if (p2 != command.length()) {
-            invalid();
-            return;
+            throw Invalid();
         }
         if (p1 > command.length()) {
-            invalid();
-            return;
+            throw Invalid();
         }
         String20 ISBN = command.substr(p1, p2 - p1);
         bs.showISBN(ISBN);
@@ -500,12 +470,10 @@ void Run::runShow(std::string command) {
         int p2 = res.second;
         p2 = -p2;
         if (p2 + 1 != command.length()) {
-            invalid();
-            return;
+            throw Invalid();
         }
         if (p1 > command.length()) {
-            invalid();
-            return;
+            throw Invalid();
         }
         String60 BookName = command.substr(p1, p2 - p1);
         bs.showBookName(BookName);
@@ -514,12 +482,10 @@ void Run::runShow(std::string command) {
         int p2 = res.second;
         p2 = -p2;
         if (p2 + 1 != command.length()) {
-            invalid();
-            return;
+            throw Invalid();
         }
         if (p1 > command.length()) {
-            invalid();
-            return;
+            throw Invalid();
         }
         String60 Author = command.substr(p1, p2 - p1);
         bs.showAuthor(Author);
@@ -528,60 +494,50 @@ void Run::runShow(std::string command) {
         int p2 = res.second;
         p2 = -p2;
         if (p2 + 1 != command.length() || p2 == p1) {
-            invalid();
-            return;
+            throw Invalid();
         }
         if (p1 > command.length()) {
-            invalid();
-            return;
+            throw Invalid();
         }
         String60 Keyword = command.substr(p1, p2 - p1);
         if (!bs.showKeyword(Keyword)) {
-            invalid();
-            return;
+            throw Invalid();
         }
     }
 }
 void Run::runBuy(std::string command) {
     if (nowAccount.Privilege < 1) {
-        invalid();
-        return;
+        throw Invalid();
     }
     int p1 = 3;
     int p2 = getISBN(command, p1 + 1);
     if (p2 == -1 || p2 == command.length()) {
-        invalid();
-        return;
+        throw Invalid();
     }
     int p3 = getQuantity(command, p2 + 1);
     if (p3 != command.length()) {
-        invalid();
-        return;
+        throw Invalid();
     }
     std::string quantity = command.substr(p2 + 1, p3 - p2 - 1);
     int Quantity = getNumber(quantity);
     if (Quantity <= 0) {
-        invalid();
-        return;
+        throw Invalid();
     }
     String20 ISBN = command.substr(p1 + 1, p2 - p1 - 1);
     double income = bs.buy(ISBN, Quantity);
     if (income < 0) {
-        invalid();
-        return;
+        throw Invalid();
     }
     ls.addLog(income, 0);
 }
 void Run::runSelect(std::string command) {
     if (nowAccount.Privilege < 3) {
-        invalid();
-        return;
+        throw Invalid();
     }
     int p1 = 6;
     int p2 = getISBN(command, p1 + 1);
     if (p2 != command.length() || p2 == p1 + 1) {
-        invalid();
-        return;
+        throw Invalid();
     }
     String20 ISBN = command.substr(p1 + 1, p2 - p1 - 1);
     int cur = bs.select(ISBN);
@@ -589,8 +545,7 @@ void Run::runSelect(std::string command) {
 }
 void Run::runModify(std::string command) {
     if (nowAccount.Privilege < 3) {
-        invalid();
-        return;
+        throw Invalid();
     }
     static bool vis[5];
     vis[0] = vis[1] = vis[2] = vis[3] = vis[4] = false;
@@ -601,85 +556,72 @@ void Run::runModify(std::string command) {
     double Price;
     while (p1 < command.length()) {
         if (command[p1 - 1] != ' ') {
-            invalid();
-            return;
+            throw Invalid();
         }
         std::pair<ParamType, int> res = getToken(command, p1);
         if (res.first == kError) {
-            invalid();
-            return;
+            throw Invalid();
         }
         if (res.first == kISBN) {
             if (vis[0]) {
-                invalid();
-                return;
+                throw Invalid();
             }
             vis[0] = true;
             p1 += 6;
             int p2 = res.second;
             if (p2 == p1 || p2 == -1) {
-                invalid();
-                return;
+                throw Invalid();
             }
             vec[0] = std::make_pair(kISBN, std::make_pair(p1, p2));
             p1 = p2 + 1;
         } else if (res.first == kName) {
             if (vis[1]) {
-                invalid();
-                return;
+                throw Invalid();
             }
             vis[1] = true;
             p1 += 7;
             int p2 = res.second;
             p2 = -p2;
             if (p2 == p1 || p2 == 1) {
-                invalid();
-                return;
+                throw Invalid();
             }
             vec[1] = std::make_pair(kName, std::make_pair(p1, p2));
             p1 = p2 + 2;
         } else if (res.first == kAuthor) {
             if (vis[2]) {
-                invalid();
-                return;
+                throw Invalid();
             }
             vis[2] = true;
             p1 += 9;
             int p2 = res.second;
             p2 = -p2;
             if (p2 == p1 || p2 == 1) {
-                invalid();
-                return;
+                throw Invalid();
             }
             vec[2] = std::make_pair(kAuthor, std::make_pair(p1, p2));
             p1 = p2 + 2;
         } else if (res.first == kKeyword) {
             if (vis[3]) {
-                invalid();
-                return;
+                throw Invalid();
             }
             vis[3] = true;
             p1 += 10;
             int p2 = res.second;
             p2 = -p2;
             if (p2 == p1 || p2 == 1) {
-                invalid();
-                return;
+                throw Invalid();
             }
             if (p1 > command.length()) {
-                invalid();
-                return;
+                throw Invalid();
             }
             std::string tmp = "";
             for (int i = p1; i < p2; ++i) {
                 if (command[i] == '|') {
                     if (tmp.length() == 0) {
-                        invalid();
-                        return;
+                        throw Invalid();
                     }
                     if (mp[tmp]) {
-                        invalid();
-                        return;
+                        throw Invalid();
                     }
                     mp[tmp] = true;
                     tmp = "";
@@ -688,139 +630,117 @@ void Run::runModify(std::string command) {
                 }
             }
             if (tmp.length() == 0) {
-                invalid();
-                return;
+                throw Invalid();
             }
             if (mp[tmp]) {
-                invalid();
-                return;
+                throw Invalid();
             }
             mp[tmp] = true;
             vec[3] = std::make_pair(kKeyword, std::make_pair(p1, p2));
             p1 = p2 + 2;
         } else {
             if (vis[4]) {
-                invalid();
-                return;
+                throw Invalid();
             }
             vis[4] = true;
             p1 += 7;
             int p2 = res.second;
             if (p1 > command.length()) {
-                invalid();
-                return;
+                throw Invalid();
             }
             std::string price = command.substr(p1, p2 - p1);
             Price = getDouble(price);
             if (Price < 0) {
-                invalid();
-                return;
+                throw Invalid();
             }
             p1 = p2 + 1;
         }
     }
     if (p1 != command.length() + 1) {
-        invalid();
-        return;
+        throw Invalid();
     }
     if (vis[0]) {
         if (vec[0].second.first > command.length()) {
-            invalid();
-            return;
+            throw Invalid();
         }
         String20 ISBN = command.substr(vec[0].second.first, vec[0].second.second - vec[0].second.first);
         if (!bs.modifyISBN(ISBN)) {
-            invalid();
-            return;
+            throw Invalid();
         }
     }
     for (int i = 1; i < 4; ++i) {
         if (vis[i]) {
             auto now = vec[i];
             if (now.second.first > command.length()) {
-                invalid();
-                return;
+                throw Invalid();
             }
             String60 tmp = command.substr(now.second.first, now.second.second - now.second.first);
             if (now.first == kName) {
                 if (!bs.modifyBookName(tmp)) {
-                    invalid();
-                    return;
+                    throw Invalid();
                 }
             } else if (now.first == kAuthor) {
                 if (!bs.modifyAuthor(tmp)) {
-                    invalid();
-                    return;
+                    throw Invalid();
                 }
             } else {
                 if (!bs.modifyKeyword(tmp)) {
-                    invalid();
-                    return;
+                    throw Invalid();
                 }
             }
         }
     }
     if (vis[4]) {
         if (!bs.modifyPrice(Price)) {
-            invalid();
-            return;
+            throw Invalid();
         }
     }
 }
 void Run::runImport(std::string command) {
     if (nowAccount.Privilege < 3) {
-        invalid();
-        return;
+        throw Invalid();
     }
     int p1 = 6;
     int p2 = getQuantity(command, p1 + 1);
     if (p2 == -1 || p2 == command.length()) {
-        invalid();
-        return;
+        throw Invalid();
     }
     int p3 = getTotalCost(command, p2 + 1);
     if (p3 != command.length()) {
-        invalid();
-        return;
+        throw Invalid();
     }
     std::string quantity = command.substr(p1 + 1, p2 - p1 - 1), totalCost = command.substr(p2 + 1, p3 - p2 - 1);
     int Quantity = getNumber(quantity);
     double TotalCost = getDouble(totalCost);
     if (Quantity <= 0 || TotalCost <= 0) {
-        invalid();
-        return;
+        throw Invalid();
     }
     if (!bs.import(Quantity)) {
-        invalid();
-        return;
+        throw Invalid();
     }
     ls.addLog(0, TotalCost);
 }
 void Run::runShowFinance(std::string command) {
     if (nowAccount.Privilege < 7) {
-        invalid();
-        return;
+        throw Invalid();
     }
     if (command.length() == 12) {
         if (!ls.showFinance(-1)) {
-            invalid();
+            throw Invalid();
         }
         return;
     }
     int p1 = 12;
     int p2 = getCount(command, p1 + 1);
     if (p2 != command.length()) {
-        invalid();
-        return;
+        throw Invalid();
     }
     std::string count = command.substr(p1 + 1, p2 - p1 - 1);
     int number = getNumber(count);
     if (number < 0) {
-        invalid();
-        return;
+        throw Invalid();
     }
     if (!ls.showFinance(number)) {
-        invalid();
-        return;
+        throw Invalid();
     }
 }
