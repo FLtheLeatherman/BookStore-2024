@@ -758,7 +758,7 @@ void Run::runImport(std::string command) {
     // std::cout << quantity << ' ' << totalCost << std::endl;
     int Quantity = getNumber(quantity);
     double TotalCost = getDouble(totalCost);
-    if (Quantity < 0 || TotalCost < 0) {
+    if (Quantity < 0 || TotalCost <= 0) {
         invalid();
         return;
     }
