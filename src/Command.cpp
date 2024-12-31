@@ -296,7 +296,7 @@ double Run::getDouble(std::string str) {
         res = res + (str[i] - '0') * base;
         base /= 10;
     }
-    if (str.length() > 1 && str[0] == '0') {
+    if (pos > 1 && str[0] == '0') {
         return -1;
     }
     return res;
