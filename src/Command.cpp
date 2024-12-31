@@ -81,10 +81,10 @@ void Run::run(std::string command) {
             // assert(0);
             runImport(command);
         } else if (command.substr(0, 13) == "show finance ") {
-            assert(0);
+            // assert(0);
             runShowFinance(command);
         } else if (command.substr(0, 12) == "show finance"){
-            assert(0);
+            // assert(0);
             runShowFinance(command);
         } else if (command.substr(0, 5) == "show ") {
             // assert(0);
@@ -186,6 +186,7 @@ int Run::getBookName(std::string str, int pos) {
             if (i - pos > 60) return -1;
             return i;
         } else if (str[i] == '\"') {
+            // std::cout << i << ' ' << pos << std::endl;
             if (i - pos > 60) return -1;
             return -i;
         } else {
@@ -709,6 +710,10 @@ void Run::runModify(std::string command) {
     std::vector<std::pair<ParamType, std::pair<int, int>>> vec(4);
     double Price;
     while (p1 < command.length()) {
+        if (command[p1 - 1] != ' ') {
+            invalid();
+            return;
+        }
         std::pair<ParamType, int> res = getToken(command, p1);
         if (res.first == kError) {
             // std::cout << '?' << std::endl;
