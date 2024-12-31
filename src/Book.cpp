@@ -173,18 +173,13 @@ std::ostream& operator <<(std::ostream &out, const Book& book) {
 void BookStorage::initialize() {
     books.initialize("Books");
     blockList1.initialize("ISBN");
-    // std::cout << "GOOD1" << std::endl;
     blockList2.initialize("BookName");
-    // std::cout << "GOOD2" << std::endl;
     blockList3.initialize("Author");
-    // std::cout << "GOOD3" << std::endl;
     blockList4.initialize("Keyword");
-    // std::cout << "GOOD4" << std::endl;
     selected = false;
 }
 void BookStorage::show() {
     std::vector<Book> res = books.show();
-    // std::cout << res.size() << std::endl;
     sort(res.begin(), res.end());
     if (!res.size()) {
         std::cout << '\n';
@@ -295,7 +290,6 @@ int BookStorage::select(String20 ISBN) {
     if (!res.size()) {
         Book tmp;
         books.get_info(tmp.id, 1);
-        // std::cout << "o:" << tmp.id << std::endl;
         tmp.id++;
         books.write_info(tmp.id, 1);
         tmp.ISBN = ISBN;
@@ -308,14 +302,12 @@ int BookStorage::select(String20 ISBN) {
     }
     selected = true;
     current = res[0];
-    // std::cout << current << std::endl;
     return current;
 }
 bool BookStorage::modifyISBN(String20 ISBN) {
     if (!selected) {
         return false;
     }
-    // std::cout << ISBN << ' ' << current.ISBN << std::endl;
     Book now;
     books.read(now, current);
     if (ISBN == now.ISBN) {
@@ -337,7 +329,6 @@ bool BookStorage::modifyBookName(String60 BookName) {
     }
     Book now;
     books.read(now, current);
-    // std::cout << "!" << now.id << std::endl;
     blockList2.mydelete(now.BookName, current);
     now.BookName = BookName;
     blockList2.insert(now.BookName, current);

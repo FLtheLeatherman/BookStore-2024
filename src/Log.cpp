@@ -23,15 +23,12 @@ void LogInfoStorage::initialize() {
     storage.initialize("LogInfo");
 }
 void LogInfoStorage::addLog(double income, double expend) {
-    // std::cout << income << ' ' << expend << std::endl;
     int len;
     LogInfo lst;
     storage.get_info(len, 1);
-    // std::cout << len << std::endl;
     if (len > 0) storage.read(lst, len);
     len++;
     lst.income += income, lst.expend += expend;
-    // std::cout << lst.income << ' ' << lst.expend << std::endl;
     storage.write_info(len, 1);
     storage.write(lst, len);
 }

@@ -85,7 +85,7 @@ bool Account::operator ==(const Account &RHS) {
 std::ostream& operator <<(std::ostream &out, const Account &account) {
     out << account.UserID << ' ' << account.Privilege;
     return out;
-} // 实际上似乎并不用实现这个函数。不过便于调试（和通过编译）还是写了。
+}
 
 void AccountStorage::initialize() {
     blockList.initialize("Account");
@@ -131,7 +131,6 @@ bool AccountStorage::login(String30 UserID, String30 Password) {
             return false;
         }
     }
-    // std::cout << "login" << res[0] << std::endl;
     userStack.push_back(std::make_pair(res[0], -1));
     return true;
 }
@@ -161,7 +160,6 @@ bool AccountStorage::changePassword(String30 UserID, String30 CurrentPassword, S
             return false;
         }
     } else {
-        // std::cout << '?' << userStack.empty() << '?' << std::endl;
         if (userStack.empty()) {
             return false;
         }
@@ -182,7 +180,6 @@ bool AccountStorage::useradd(String30 UserID, String30 Password, int Privilege, 
         return false;
     }
     std::vector<Account> res = blockList.query(UserID);
-    // std::cout << UserID << ' ' << res.size() << std::endl;
     if (!res.empty()) {
         return false;
     }
