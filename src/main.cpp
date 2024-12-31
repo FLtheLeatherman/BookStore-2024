@@ -78,6 +78,25 @@ bool read() {
     return false;
 }
 
+void format(std::string &str) {
+    std::string tmp = "";
+    for (int i = 0; i < str.length(); ++i) {
+        if (str[i] != ' ') {
+            tmp += str[i];
+        } else {
+            int p = i;
+            while (p + 1 < str.length() && str[p + 1] == ' ') {
+                p++;
+            }
+            if (i != 0 && p != str.length() - 1) {
+                tmp += ' ';
+            }
+            i = p;
+        }
+    }
+    str = tmp;
+}
+
 int main() {
     // freopen("test.in", "r", stdin);
     // freopen("test.out", "w", stdout);
@@ -94,6 +113,7 @@ int main() {
             }
             continue;
         }
+        format(command);
         if (command == "quit" || command == "exit") {
             break;
         }

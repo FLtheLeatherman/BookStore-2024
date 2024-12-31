@@ -22,8 +22,6 @@ public:
 
     void invalid();
 
-    void format(std::string &);
-
     void run(std::string);
 
     int getUserID(std::string, int);
