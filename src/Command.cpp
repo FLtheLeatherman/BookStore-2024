@@ -35,7 +35,7 @@ void Run::format(std::string &str) {
 }
 
 void Run::run(std::string command) {
-    try {
+    // try {
         format(command);
         // std::cout << command.length() << std::endl;
         if (!command.length()) {
@@ -95,9 +95,9 @@ void Run::run(std::string command) {
             // int a = 1/0;
             invalid();
         }
-    } catch (...) {
-        invalid();
-    }
+    // } catch (...) {
+    //     invalid();
+    // }
 }
 
 int Run::getUserID(std::string str, int pos) {
@@ -333,7 +333,7 @@ std::pair<ParamType, int> Run::getToken(std::string str, int pos) {
 }
 
 void Run::runSu(std::string command) {
-    try {
+    // try {
         // command.substr(command.length() + 1, 1);
         int p1 = 2;
         int p2 = getUserID(command, p1 + 1);
@@ -364,13 +364,13 @@ void Run::runSu(std::string command) {
             }
             nowAccount = as.getAccount();
         }
-    } catch (...) {
-        std::cout << "catch!" << std::endl;
-        throw;
-    }
+    // } catch (...) {
+        // std::cout << "catch!" << std::endl;
+        // throw;
+    // }
 }
 void Run::runLogout(std::string command) {
-    try {
+    // try {
         if (nowAccount.Privilege < 1) {
             invalid();
             return;
@@ -381,12 +381,12 @@ void Run::runLogout(std::string command) {
         }
         nowAccount = as.getAccount();
         bs.select(as.getSelect());
-    } catch (...) {
-        throw;
-    }
+    // } catch (...) {
+    //     throw;
+    // }
 }
 void Run::runRegister(std::string command) {
-    try {
+    // try {
         int p1 = 8;
         int p2 = getUserID(command, p1 + 1);
         if (p2 == -1 || p2 == command.length()) {
@@ -415,12 +415,12 @@ void Run::runRegister(std::string command) {
             invalid();
             return;
         }
-    } catch (...) {
-        throw;
-    }
+    // } catch (...) {
+    //     throw;
+    // }
 }
 void Run::runPasswd(std::string command) {
-    try {
+    // try {
         if (nowAccount.Privilege < 1) {
             invalid();
             return;
@@ -463,12 +463,12 @@ void Run::runPasswd(std::string command) {
                 return;
             }
         }
-    } catch (...) {
-        throw;
-    }
+    // } catch (...) {
+    //     throw;
+    // }
 }
 void Run::runUseradd(std::string command) {
-    try {
+    // try {
         if (nowAccount.Privilege < 3) {
             invalid();
             return;
@@ -506,12 +506,12 @@ void Run::runUseradd(std::string command) {
             invalid();
             return;
         }
-    } catch (...) {
-        throw;
-    }
+    // } catch (...) {
+    //     throw;
+    // }
 }
 void Run::runDelete(std::string command) {
-    try {
+    // try {
         if (nowAccount.Privilege < 7) {
             invalid();
             return;
@@ -531,9 +531,9 @@ void Run::runDelete(std::string command) {
             invalid();
             return;
         }
-    } catch (...) {
-        throw;
-    }
+    // } catch (...) {
+    //     throw;
+    // }
 }
 void Run::runShow(std::string command) {
     // std::cout << "!" << command << std::endl;

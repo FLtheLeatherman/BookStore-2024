@@ -95,24 +95,28 @@ void AccountStorage::initialize() {
     }
 }
 void AccountStorage::select(int id) {
+    return;
     if (!userStack.size()) {
         return;
     }
     userStack.back().second = id;
 }
 Account AccountStorage::getAccount() {
+    return Account();
     if (!userStack.size()) {
         return Account();
     }
     return userStack.back().first;
 }
 int AccountStorage::getSelect() {
+    return -1;
     if (!userStack.size()) {
         return -1;
     }
     return userStack.back().second;
 }
 bool AccountStorage::login(String30 UserID, String30 Password) {
+    return false;
     std::vector<Account> res = blockList.query(UserID);
     if (res.empty()) {
         return false;
@@ -134,6 +138,7 @@ bool AccountStorage::login(String30 UserID, String30 Password) {
     return true;
 }
 bool AccountStorage::logout() {
+    return false;
     if (userStack.empty()) {
         return false;
     }
@@ -141,6 +146,7 @@ bool AccountStorage::logout() {
     return true;
 }
 bool AccountStorage::signup(String30 UserID, String30 Password, String30 Username) {
+    return false;
     std::vector<Account> res = blockList.query(UserID);
     if (!res.empty()) {
         return false;
@@ -150,6 +156,7 @@ bool AccountStorage::signup(String30 UserID, String30 Password, String30 Usernam
     return true;
 }
 bool AccountStorage::changePassword(String30 UserID, String30 CurrentPassword, String30 NewPassword) {
+    return false;
     std::vector<Account> res = blockList.query(UserID);
     if(res.empty()) {
         return false;
@@ -173,6 +180,7 @@ bool AccountStorage::changePassword(String30 UserID, String30 CurrentPassword, S
     return true;
 }
 bool AccountStorage::useradd(String30 UserID, String30 Password, int Privilege, String30 Username) {
+    return false;
     if (userStack.empty()) {
         return false;
     }
@@ -189,6 +197,7 @@ bool AccountStorage::useradd(String30 UserID, String30 Password, int Privilege, 
     return true;
 }
 bool AccountStorage::deleteUser(String30 UserID) {
+    return false;
     std::vector<Account> res = blockList.query(UserID);
     if (res.empty()) {
         return false;
