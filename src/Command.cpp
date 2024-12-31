@@ -35,64 +35,68 @@ void Run::format(std::string &str) {
 }
 
 void Run::run(std::string command) {
-    format(command);
-    // std::cout << command.length() << std::endl;
-    if (!command.length()) {
-        invalid();
-        return;
-    }
-    if (command.substr(0, 3) == "su ") {
-        // std::cerr << "SIUUUUU" << std::endl;
-        invalid();
-        return;
-        runSu(command);
-    } else if (command.substr(0, 6) == "logout") {
-        invalid();
-        return;
-        runLogout(command);
-    } else if (command.substr(0, 9) == "register ") {
-        invalid();
-        return;
-        runRegister(command);
-    } else if (command.substr(0, 7) == "passwd ") {
-        invalid();
-        return;
-        runPasswd(command);
-    } else if (command.substr(0, 8) == "useradd ") {
-        invalid();
-        return;
-        runUseradd(command);
-    } else if (command.substr(0, 7) == "delete ") {
-        invalid();
-        return;
-        runDelete(command);
-    } else if (command.substr(0, 4) == "buy ") {
-        int a = 1/0;
-        runBuy(command);
-    } else if (command.substr(0, 7) == "select ") {
-        int a = 1/0;
-        runSelect(command);
-    } else if (command.substr(0, 7) == "modify ") {
-        int a = 1/0;
-        runModify(command);
-    } else if (command.substr(0, 7) == "import ") {
-        int a = 1/0;
-        runImport(command);
-    } else if (command.substr(0, 13) == "show finance ") {
-        int a = 1/0;
-        runShowFinance(command);
-    } else if (command.substr(0, 12) == "show finance"){
-        int a = 1/0;
-        runShowFinance(command);
-    }  else if (command.substr(0, 5) == "show ") {
-        int a = 1/0;
-        runShow(command);
-    }else if (command.substr(0, 4) == "show") {
-        int a = 1/0;
-        runShow(command);
-    } else {
-        int a = 1/0;
-        invalid();
+    try {
+        format(command);
+        // std::cout << command.length() << std::endl;
+        if (!command.length()) {
+            invalid();
+            return;
+        }
+        if (command.substr(0, 3) == "su ") {
+            // std::cerr << "SIUUUUU" << std::endl;
+            // invalid();
+            // return;
+            runSu(command);
+        } else if (command.substr(0, 6) == "logout") {
+            // invalid();
+            // return;
+            runLogout(command);
+        } else if (command.substr(0, 9) == "register ") {
+            // invalid();
+            // return;
+            runRegister(command);
+        } else if (command.substr(0, 7) == "passwd ") {
+            // invalid();
+            // return;
+            runPasswd(command);
+        } else if (command.substr(0, 8) == "useradd ") {
+            // invalid();
+            // return;
+            runUseradd(command);
+        } else if (command.substr(0, 7) == "delete ") {
+            // invalid();
+            // return;
+            runDelete(command);
+        } else if (command.substr(0, 4) == "buy ") {
+            // int a = 1/0;
+            runBuy(command);
+        } else if (command.substr(0, 7) == "select ") {
+            // int a = 1/0;
+            runSelect(command);
+        } else if (command.substr(0, 7) == "modify ") {
+            // int a = 1/0;
+            runModify(command);
+        } else if (command.substr(0, 7) == "import ") {
+            // int a = 1/0;
+            runImport(command);
+        } else if (command.substr(0, 13) == "show finance ") {
+            // int a = 1/0;
+            runShowFinance(command);
+        } else if (command.substr(0, 12) == "show finance"){
+            // int a = 1/0;
+            runShowFinance(command);
+        }  else if (command.substr(0, 5) == "show ") {
+            // int a = 1/0;
+            runShow(command);
+        }else if (command.substr(0, 4) == "show") {
+            // int a = 1/0;
+            runShow(command);
+        } else {
+            // int a = 1/0;
+            invalid();
+        }
+    } catch (...) {
+        throw;
     }
 }
 
@@ -329,180 +333,204 @@ std::pair<ParamType, int> Run::getToken(std::string str, int pos) {
 }
 
 void Run::runSu(std::string command) {
-    int p1 = 2;
-    int p2 = getUserID(command, p1 + 1);
-    if (p2 == -1) {
-        invalid();
-        return;
-    }
-    if (p1 == command.length()) {
-        invalid();
-        return;
-    }
-    if (p2 == command.length()) {
-        String30 UserID = command.substr(p1 + 1, p2 - p1 - 1), Password;
-        if (!as.login(UserID, Password)) {
+    try {
+        int p1 = 2;
+        int p2 = getUserID(command, p1 + 1);
+        if (p2 == -1) {
             invalid();
             return;
         }
-    } else {
-        int p3 = getPassword(command, p2 + 1);
-        if (p3 != command.length()) {
+        if (p1 == command.length()) {
             invalid();
             return;
         }
-        String30 UserID = command.substr(p1 + 1, p2 - p1 - 1), Password = command.substr(p2 + 1, p3 - p2 - 1);
-        if (!as.login(UserID, Password)) {
+        if (p2 == command.length()) {
+            String30 UserID = command.substr(p1 + 1, p2 - p1 - 1), Password;
+            if (!as.login(UserID, Password)) {
+                invalid();
+                return;
+            }
+        } else {
+            int p3 = getPassword(command, p2 + 1);
+            if (p3 != command.length()) {
+                invalid();
+                return;
+            }
+            String30 UserID = command.substr(p1 + 1, p2 - p1 - 1), Password = command.substr(p2 + 1, p3 - p2 - 1);
+            if (!as.login(UserID, Password)) {
+                invalid();
+                return;
+            }
+            nowAccount = as.getAccount();
+        }
+    } catch (...) {
+        throw;
+    }
+}
+void Run::runLogout(std::string command) {
+    try {
+        if (nowAccount.Privilege < 1) {
+            invalid();
+            return;
+        }
+        if (!as.logout()) {
             invalid();
             return;
         }
         nowAccount = as.getAccount();
+        bs.select(as.getSelect());
+    } catch (...) {
+        throw;
     }
-}
-void Run::runLogout(std::string command) {
-    if (nowAccount.Privilege < 1) {
-        invalid();
-        return;
-    }
-    if (!as.logout()) {
-        invalid();
-        return;
-    }
-    nowAccount = as.getAccount();
-    bs.select(as.getSelect());
 }
 void Run::runRegister(std::string command) {
-    int p1 = 8;
-    int p2 = getUserID(command, p1 + 1);
-    if (p2 == -1 || p2 == command.length()) {
-        invalid();
-        return;
-    }
-    int p3 = getPassword(command, p2 + 1);
-    if (p3 == -1 || p3 == command.length()) {
-        invalid();
-        return;
-    }
-    int p4 = getUsername(command, p3 + 1);
-    if (p4 != command.length()) {
-        invalid();
-        return;
-    }
-    if (p1 == command.length()) {
-        invalid();
-        return;
-    }
-    String30 UserID = command.substr(p1 + 1, p2 - p1 - 1);
-    String30 Password = command.substr(p2 + 1, p3 - p2 - 1);
-    String30 UserName = command.substr(p3 + 1, p4 - p3 - 1);
-    // std::cout << UserID << ' ' << Password << ' ' << UserName << std::endl;
-    if (!as.signup(UserID, Password, UserName)) {
-        invalid();
-        return;
-    }
-}
-void Run::runPasswd(std::string command) {
-    if (nowAccount.Privilege < 1) {
-        invalid();
-        return;
-    }
-    int p1 = 6;
-    if (p1 == command.length()) {
-        invalid();
-        return;
-    }
-    int p2 = getUserID(command, p1 + 1);
-    if (p2 == -1 || p2 == command.length()) {
-        invalid();
-        return;
-    }
-    int p3 = getCurrentPassword(command, p2 + 1);
-    if (p3 == -1) {
-        invalid();
-        return;
-    }
-    if (p3 == command.length()) {
-        String30 UserID = command.substr(p1 + 1, p2 - p1 - 1);
-        String30 CurrentPassword;
-        String30 NewPassword = command.substr(p2 + 1, p3 - p2 - 1);
-        if (!as.changePassword(UserID, CurrentPassword, NewPassword)) {
-            // std::cout << "!" << std::endl;
+    try {
+        int p1 = 8;
+        int p2 = getUserID(command, p1 + 1);
+        if (p2 == -1 || p2 == command.length()) {
             invalid();
             return;
         }
-    } else {
-        int p4 = getNewPassword(command, p3 + 1);
+        int p3 = getPassword(command, p2 + 1);
+        if (p3 == -1 || p3 == command.length()) {
+            invalid();
+            return;
+        }
+        int p4 = getUsername(command, p3 + 1);
         if (p4 != command.length()) {
             invalid();
             return;
         }
-        String30 UserID = command.substr(p1 + 1, p2 - p1 - 1);
-        String30 CurrentPassword = command.substr(p2 + 1, p3 - p2 - 1);
-        String30 NewPassword = command.substr(p3 + 1, p4 - p3 - 1);
-        if (!as.changePassword(UserID, CurrentPassword, NewPassword)) {
+        if (p1 == command.length()) {
             invalid();
             return;
         }
+        String30 UserID = command.substr(p1 + 1, p2 - p1 - 1);
+        String30 Password = command.substr(p2 + 1, p3 - p2 - 1);
+        String30 UserName = command.substr(p3 + 1, p4 - p3 - 1);
+        // std::cout << UserID << ' ' << Password << ' ' << UserName << std::endl;
+        if (!as.signup(UserID, Password, UserName)) {
+            invalid();
+            return;
+        }
+    } catch (...) {
+        throw;
+    }
+}
+void Run::runPasswd(std::string command) {
+    try {
+        if (nowAccount.Privilege < 1) {
+            invalid();
+            return;
+        }
+        int p1 = 6;
+        if (p1 == command.length()) {
+            invalid();
+            return;
+        }
+        int p2 = getUserID(command, p1 + 1);
+        if (p2 == -1 || p2 == command.length()) {
+            invalid();
+            return;
+        }
+        int p3 = getCurrentPassword(command, p2 + 1);
+        if (p3 == -1) {
+            invalid();
+            return;
+        }
+        if (p3 == command.length()) {
+            String30 UserID = command.substr(p1 + 1, p2 - p1 - 1);
+            String30 CurrentPassword;
+            String30 NewPassword = command.substr(p2 + 1, p3 - p2 - 1);
+            if (!as.changePassword(UserID, CurrentPassword, NewPassword)) {
+                // std::cout << "!" << std::endl;
+                invalid();
+                return;
+            }
+        } else {
+            int p4 = getNewPassword(command, p3 + 1);
+            if (p4 != command.length()) {
+                invalid();
+                return;
+            }
+            String30 UserID = command.substr(p1 + 1, p2 - p1 - 1);
+            String30 CurrentPassword = command.substr(p2 + 1, p3 - p2 - 1);
+            String30 NewPassword = command.substr(p3 + 1, p4 - p3 - 1);
+            if (!as.changePassword(UserID, CurrentPassword, NewPassword)) {
+                invalid();
+                return;
+            }
+        }
+    } catch (...) {
+        throw;
     }
 }
 void Run::runUseradd(std::string command) {
-    if (nowAccount.Privilege < 3) {
-        invalid();
-        return;
-    }
-    int p1 = 7;
-    int p2 = getUserID(command, p1 + 1);
-    if (p2 == -1 || p2 == command.length()) {
-        invalid();
-        return;
-    }
-    int p3 = getPassword(command, p2 + 1);
-    if (p3 == -1 || p3 == command.length()) {
-        invalid();
-        return;
-    }
-    int p4 = getPrivilege(command, p3 + 1);
-    if (p4 == -1 || p4 == command.length()) {
-        invalid();
-        return;
-    }
-    int p5 = getUsername(command, p4 + 1);
-    if (p5 != command.length()) {
-        invalid();
-        return;
-    }
-    if (p1 == command.length()) {
-        invalid();
-        return;
-    }
-    String30 UserID = command.substr(p1 + 1, p2 - p1 - 1);
-    String30 Password = command.substr(p2 + 1, p3 - p2 - 1);
-    int Privilege = command[p3 + 1] - '0';
-    String30 UserName = command.substr(p4 + 1, p5 - p4 - 1);
-    if (!as.useradd(UserID, Password, Privilege, UserName)) {
-        invalid();
-        return;
+    try {
+        if (nowAccount.Privilege < 3) {
+            invalid();
+            return;
+        }
+        int p1 = 7;
+        int p2 = getUserID(command, p1 + 1);
+        if (p2 == -1 || p2 == command.length()) {
+            invalid();
+            return;
+        }
+        int p3 = getPassword(command, p2 + 1);
+        if (p3 == -1 || p3 == command.length()) {
+            invalid();
+            return;
+        }
+        int p4 = getPrivilege(command, p3 + 1);
+        if (p4 == -1 || p4 == command.length()) {
+            invalid();
+            return;
+        }
+        int p5 = getUsername(command, p4 + 1);
+        if (p5 != command.length()) {
+            invalid();
+            return;
+        }
+        if (p1 == command.length()) {
+            invalid();
+            return;
+        }
+        String30 UserID = command.substr(p1 + 1, p2 - p1 - 1);
+        String30 Password = command.substr(p2 + 1, p3 - p2 - 1);
+        int Privilege = command[p3 + 1] - '0';
+        String30 UserName = command.substr(p4 + 1, p5 - p4 - 1);
+        if (!as.useradd(UserID, Password, Privilege, UserName)) {
+            invalid();
+            return;
+        }
+    } catch (...) {
+        throw;
     }
 }
 void Run::runDelete(std::string command) {
-    if (nowAccount.Privilege < 7) {
-        invalid();
-        return;
-    }
-    int p1 = 6;
-    int p2 = getUserID(command, p1 + 1);
-    if (p2 != command.length()) {
-        invalid();
-        return;
-    }
-    if (p1 == command.length()) {
-        invalid();
-        return;
-    }
-    String30 UserID = command.substr(p1 + 1, p2 - p1 - 1);
-    if (!as.deleteUser(UserID)) {
-        invalid();
-        return;
+    try {
+        if (nowAccount.Privilege < 7) {
+            invalid();
+            return;
+        }
+        int p1 = 6;
+        int p2 = getUserID(command, p1 + 1);
+        if (p2 != command.length()) {
+            invalid();
+            return;
+        }
+        if (p1 == command.length()) {
+            invalid();
+            return;
+        }
+        String30 UserID = command.substr(p1 + 1, p2 - p1 - 1);
+        if (!as.deleteUser(UserID)) {
+            invalid();
+            return;
+        }
+    } catch (...) {
+        throw;
     }
 }
 void Run::runShow(std::string command) {

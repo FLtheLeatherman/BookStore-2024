@@ -396,11 +396,11 @@ public:
         return sb.show();
     }
     ~BlockList() {
-        std::cerr << sb.filePreffix << " successfully closed!" << std::endl;
+        // std::cerr << sb.filePreffix << " successfully closed!" << std::endl;
         sb.body.close();
         sb.head.initialize(sb.filePreffix + "_head");
         sb.head.write(sb.len, 0);
-        std::cerr << sb.len << std::endl;
+        // std::cerr << sb.len << std::endl;
         for (int i = 0; i < sb.len; ++i) {
             sb.head.write(sb.headAddr[i], (i + 1) * sizeof(int));
         }
