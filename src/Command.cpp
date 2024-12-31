@@ -86,10 +86,10 @@ void Run::run(std::string command) {
         } else if (command.substr(0, 12) == "show finance"){
             // assert(0);
             runShowFinance(command);
-        }  else if (command.substr(0, 5) == "show ") {
+        } else if (command.substr(0, 5) == "show ") {
             // assert(0);
             runShow(command);
-        }else if (command.substr(0, 4) == "show") {
+        } else if (command.substr(0, 4) == "show") {
             // assert(0);
             runShow(command);
         } else {
@@ -186,6 +186,7 @@ int Run::getBookName(std::string str, int pos) {
             if (i - pos > 60) return -1;
             return i;
         } else if (str[i] == '\"') {
+            if (i - pos > 60) return -1;
             return -i;
         } else {
             return -1;
