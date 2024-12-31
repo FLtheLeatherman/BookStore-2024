@@ -7,9 +7,9 @@
 #include "Log.hpp"
 
 void Run::initialize() {
-    as.initialize();
-    bs.initialize();
-    ls.initialize();
+    accountStorage.initialize();
+    bookStorage.initialize();
+    logStorage.initialize();
 }
 
 void Run::run(std::string command) {
@@ -319,7 +319,7 @@ void Run::runSu(std::string command) {
     }
     if (p2 == command.length()) {
         String30 UserID = command.substr(p1 + 1, p2 - p1 - 1), Password;
-        if (!as.login(UserID, Password)) {
+        if (!accountStorage.login(UserID, Password)) {
             throw Invalid();
         }
     } else {
@@ -328,21 +328,21 @@ void Run::runSu(std::string command) {
             throw Invalid();
         }
         String30 UserID = command.substr(p1 + 1, p2 - p1 - 1), Password = command.substr(p2 + 1, p3 - p2 - 1);
-        if (!as.login(UserID, Password)) {
+        if (!accountStorage.login(UserID, Password)) {
             throw Invalid();
         }
-        nowAccount = as.getAccount();
+        nowAccount = accountStorage.getAccount();
     }
 }
 void Run::runLogout(std::string command) {
     if (nowAccount.Privilege < 1) {
         throw Invalid();
     }
-    if (!as.logout()) {
+    if (!accountStorage.logout()) {
         throw Invalid();
     }
-    nowAccount = as.getAccount();
-    bs.select(as.getSelect());
+    nowAccount = accountStorage.getAccount();
+    bookStorage.select(accountStorage.getSelect());
 }
 void Run::runRegister(std::string command) {
     int p1 = 8;
@@ -361,7 +361,7 @@ void Run::runRegister(std::string command) {
     String30 UserID = command.substr(p1 + 1, p2 - p1 - 1);
     String30 Password = command.substr(p2 + 1, p3 - p2 - 1);
     String30 UserName = command.substr(p3 + 1, p4 - p3 - 1);
-    if (!as.signup(UserID, Password, UserName)) {
+    if (!accountStorage.signup(UserID, Password, UserName)) {
         throw Invalid();
     }
 }
@@ -382,7 +382,7 @@ void Run::runPasswd(std::string command) {
         String30 UserID = command.substr(p1 + 1, p2 - p1 - 1);
         String30 CurrentPassword;
         String30 NewPassword = command.substr(p2 + 1, p3 - p2 - 1);
-        if (!as.changePassword(UserID, CurrentPassword, NewPassword)) {
+        if (!accountStorage.changePassword(UserID, CurrentPassword, NewPassword)) {
             throw Invalid();
         }
     } else {
@@ -393,7 +393,7 @@ void Run::runPasswd(std::string command) {
         String30 UserID = command.substr(p1 + 1, p2 - p1 - 1);
         String30 CurrentPassword = command.substr(p2 + 1, p3 - p2 - 1);
         String30 NewPassword = command.substr(p3 + 1, p4 - p3 - 1);
-        if (!as.changePassword(UserID, CurrentPassword, NewPassword)) {
+        if (!accountStorage.changePassword(UserID, CurrentPassword, NewPassword)) {
             throw Invalid();
         }
     }
@@ -423,7 +423,7 @@ void Run::runUseradd(std::string command) {
     String30 Password = command.substr(p2 + 1, p3 - p2 - 1);
     int Privilege = command[p3 + 1] - '0';
     String30 UserName = command.substr(p4 + 1, p5 - p4 - 1);
-    if (!as.useradd(UserID, Password, Privilege, UserName)) {
+    if (!accountStorage.useradd(UserID, Password, Privilege, UserName)) {
         throw Invalid();
     }
 }
@@ -437,7 +437,7 @@ void Run::runDelete(std::string command) {
         throw Invalid();
     }
     String30 UserID = command.substr(p1 + 1, p2 - p1 - 1);
-    if (!as.deleteUser(UserID)) {
+    if (!accountStorage.deleteUser(UserID)) {
         throw Invalid();
     }
 }
@@ -446,7 +446,7 @@ void Run::runShow(std::string command) {
         throw Invalid();
     }
     if (command.length() == 4) {
-        bs.show();
+        bookStorage.show();
         return;
     }
     int p1 = 5;
@@ -464,7 +464,7 @@ void Run::runShow(std::string command) {
             throw Invalid();
         }
         String20 ISBN = command.substr(p1, p2 - p1);
-        bs.showISBN(ISBN);
+        bookStorage.showISBN(ISBN);
     } else if (res.first == kName) {
         p1 += 7;
         int p2 = res.second;
@@ -476,7 +476,7 @@ void Run::runShow(std::string command) {
             throw Invalid();
         }
         String60 BookName = command.substr(p1, p2 - p1);
-        bs.showBookName(BookName);
+        bookStorage.showBookName(BookName);
     } else if (res.first == kAuthor) {
         p1 += 9;
         int p2 = res.second;
@@ -488,7 +488,7 @@ void Run::runShow(std::string command) {
             throw Invalid();
         }
         String60 Author = command.substr(p1, p2 - p1);
-        bs.showAuthor(Author);
+        bookStorage.showAuthor(Author);
     } else if (res.first == kKeyword) {
         p1 += 10;
         int p2 = res.second;
@@ -500,7 +500,7 @@ void Run::runShow(std::string command) {
             throw Invalid();
         }
         String60 Keyword = command.substr(p1, p2 - p1);
-        if (!bs.showKeyword(Keyword)) {
+        if (!bookStorage.showKeyword(Keyword)) {
             throw Invalid();
         }
     }
@@ -524,11 +524,11 @@ void Run::runBuy(std::string command) {
         throw Invalid();
     }
     String20 ISBN = command.substr(p1 + 1, p2 - p1 - 1);
-    double income = bs.buy(ISBN, Quantity);
+    double income = bookStorage.buy(ISBN, Quantity);
     if (income < 0) {
         throw Invalid();
     }
-    ls.addLog(income, 0);
+    logStorage.addLog(income, 0);
 }
 void Run::runSelect(std::string command) {
     if (nowAccount.Privilege < 3) {
@@ -540,8 +540,8 @@ void Run::runSelect(std::string command) {
         throw Invalid();
     }
     String20 ISBN = command.substr(p1 + 1, p2 - p1 - 1);
-    int cur = bs.select(ISBN);
-    as.select(cur);
+    int cur = bookStorage.select(ISBN);
+    accountStorage.select(cur);
 }
 void Run::runModify(std::string command) {
     if (nowAccount.Privilege < 3) {
@@ -664,7 +664,7 @@ void Run::runModify(std::string command) {
             throw Invalid();
         }
         String20 ISBN = command.substr(vec[0].second.first, vec[0].second.second - vec[0].second.first);
-        if (!bs.modifyISBN(ISBN)) {
+        if (!bookStorage.modifyISBN(ISBN)) {
             throw Invalid();
         }
     }
@@ -676,22 +676,22 @@ void Run::runModify(std::string command) {
             }
             String60 tmp = command.substr(now.second.first, now.second.second - now.second.first);
             if (now.first == kName) {
-                if (!bs.modifyBookName(tmp)) {
+                if (!bookStorage.modifyBookName(tmp)) {
                     throw Invalid();
                 }
             } else if (now.first == kAuthor) {
-                if (!bs.modifyAuthor(tmp)) {
+                if (!bookStorage.modifyAuthor(tmp)) {
                     throw Invalid();
                 }
             } else {
-                if (!bs.modifyKeyword(tmp)) {
+                if (!bookStorage.modifyKeyword(tmp)) {
                     throw Invalid();
                 }
             }
         }
     }
     if (vis[4]) {
-        if (!bs.modifyPrice(Price)) {
+        if (!bookStorage.modifyPrice(Price)) {
             throw Invalid();
         }
     }
@@ -715,17 +715,17 @@ void Run::runImport(std::string command) {
     if (Quantity <= 0 || TotalCost <= 0) {
         throw Invalid();
     }
-    if (!bs.import(Quantity)) {
+    if (!bookStorage.import(Quantity)) {
         throw Invalid();
     }
-    ls.addLog(0, TotalCost);
+    logStorage.addLog(0, TotalCost);
 }
 void Run::runShowFinance(std::string command) {
     if (nowAccount.Privilege < 7) {
         throw Invalid();
     }
     if (command.length() == 12) {
-        if (!ls.showFinance(-1)) {
+        if (!logStorage.showFinance(-1)) {
             throw Invalid();
         }
         return;
@@ -740,7 +740,7 @@ void Run::runShowFinance(std::string command) {
     if (number < 0) {
         throw Invalid();
     }
-    if (!ls.showFinance(number)) {
+    if (!logStorage.showFinance(number)) {
         throw Invalid();
     }
 }

@@ -19,9 +19,9 @@ public:
 
 class Run {
 private:
-    AccountStorage as;
-    BookStorage bs;
-    LogInfoStorage ls;
+    AccountStorage accountStorage;
+    BookStorage bookStorage;
+    LogInfoStorage logStorage;
     Account nowAccount;
 public:
     void initialize();

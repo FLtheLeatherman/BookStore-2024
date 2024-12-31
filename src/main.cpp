@@ -40,8 +40,8 @@ int main() {
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr), std::cout.tie(nullptr);
     std::cout << std::fixed << std::setprecision(2);
-    Run exe;
-    exe.initialize();
+    Run main;
+    main.initialize();
     while (true) {
         bool flag = read();
         if (!command.size()) {
@@ -54,7 +54,7 @@ int main() {
         if (command == "quit" || command == "exit") {
             break;
         }
-        else exe.run(command);
+        else main.run(command);
         if (!flag) {
             break;
         }
