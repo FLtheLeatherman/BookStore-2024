@@ -628,6 +628,10 @@ void Run::runShow(std::string command) {
     }
 }
 void Run::runBuy(std::string command) {
+    if (nowAccount.Privilege < 1) {
+        invalid();
+        return;
+    }
     int p1 = 3;
     int p2 = getISBN(command, p1 + 1);
     if (p2 == -1 || p2 == command.length()) {
