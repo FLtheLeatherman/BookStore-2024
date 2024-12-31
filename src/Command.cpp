@@ -96,7 +96,7 @@ void Run::run(std::string command) {
             invalid();
         }
     } catch (...) {
-        throw;
+        invalid();
     }
 }
 
@@ -334,6 +334,7 @@ std::pair<ParamType, int> Run::getToken(std::string str, int pos) {
 
 void Run::runSu(std::string command) {
     try {
+        // command.substr(command.length() + 1, 1);
         int p1 = 2;
         int p2 = getUserID(command, p1 + 1);
         if (p2 == -1) {
@@ -364,6 +365,7 @@ void Run::runSu(std::string command) {
             nowAccount = as.getAccount();
         }
     } catch (...) {
+        std::cout << "catch!" << std::endl;
         throw;
     }
 }
