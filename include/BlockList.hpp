@@ -1,15 +1,10 @@
 #ifndef BLOCKLIST_H
 #define BLOCKLIST_H
 
-// 需要进行修改以使其更加美观。
-
 #include <iostream>
 #include <fstream>
 #include <cstring>
 #include <vector>
-
-// 应当保证: T1, T2 可以被排序且可以被输出
-// T1, T2 的大小应固定; 字符串类使用 std::array 实现.
 
 template<typename T1, typename T2>
 class BlockList {
@@ -109,7 +104,6 @@ public:
             filePreffix = str;
             head.initialize(filePreffix + "_head");
             head.read(len, 0);
-            // std::cout << len << std::endl;
             for (int i = 0; i < len; ++i) {
                 int tmp;
                 head.read(tmp, (i + 1) * sizeof(int));
@@ -313,7 +307,6 @@ public:
             while (true) {
                 if (cur.key == key) {
                     flag = true;
-                    // std::cout << cur.value << '\n';
                     res.push_back(cur.value);
                 }
                 if (key < cur.key) {
@@ -354,11 +347,7 @@ public:
                     flag2 |= res;
                     if (!flag) break;
                 }
-                // if (!flag2) {
-                //     std::cout << "null";
-                // }
             }
-            // std::cout << '\n';
             return vec;
         }
         std::vector<T2> show() {
@@ -368,7 +357,6 @@ public:
                 node2 cur;
                 body.read(cur, tmp.nxtLevelAddr);
                 while (true) {
-                    // std::cout << cur.value << '\n';
                     res.push_back(cur.value);
                     if (cur.nxtAddr == -1) {
                         break;
@@ -396,11 +384,9 @@ public:
         return sb.show();
     }
     ~BlockList() {
-        // std::cerr << sb.filePreffix << " successfully closed!" << std::endl;
         sb.body.close();
         sb.head.initialize(sb.filePreffix + "_head");
         sb.head.write(sb.len, 0);
-        // std::cerr << sb.len << std::endl;
         for (int i = 0; i < sb.len; ++i) {
             sb.head.write(sb.headAddr[i], (i + 1) * sizeof(int));
         }
