@@ -9,7 +9,6 @@
 
 class String20 {
 private:
-    const static int maxLen = 20;
     size_t len;
     std::array<char, 20> str;
 public:
@@ -26,7 +25,6 @@ public:
 
 class String60 {
 private:
-    const static int maxLen = 60;
     size_t len;
     std::array<char, 60> str;
 public:

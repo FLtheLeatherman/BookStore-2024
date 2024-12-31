@@ -9,7 +9,6 @@
 
 class String30 {
 private:
-    const static int maxLen = 30;
     size_t len;
     std::array<char, 30> str;
 public:

@@ -5,7 +5,6 @@ String30::String30() {
     len = 0;
 }
 String30::String30(std::string str) {
-    assert(str.length() <= 30);
     len = str.length();
     for (int i = 0; i < len; ++i) {
         this->str[i] = str[i];
