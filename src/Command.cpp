@@ -270,6 +270,9 @@ int Run::getNumber(std::string str) {
     if (res > 2147483647) {
         return -1;
     }
+    if (str.length() > 1 && str[0] == '0') {
+        return -1;
+    }
     return (int)res;
 }
 double Run::getDouble(std::string str) {
@@ -292,6 +295,9 @@ double Run::getDouble(std::string str) {
         }
         res = res + (str[i] - '0') * base;
         base /= 10;
+    }
+    if (str.length() > 1 && str[0] == '0') {
+        return -1;
     }
     return res;
 }
