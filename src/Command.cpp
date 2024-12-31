@@ -43,34 +43,55 @@ void Run::run(std::string command) {
     }
     if (command.substr(0, 3) == "su ") {
         // std::cerr << "SIUUUUU" << std::endl;
+        invalid();
+        return;
         runSu(command);
     } else if (command.substr(0, 6) == "logout") {
+        invalid();
+        return;
         runLogout(command);
     } else if (command.substr(0, 9) == "register ") {
+        invalid();
+        return;
         runRegister(command);
     } else if (command.substr(0, 7) == "passwd ") {
+        invalid();
+        return;
         runPasswd(command);
     } else if (command.substr(0, 8) == "useradd ") {
+        invalid();
+        return;
         runUseradd(command);
     } else if (command.substr(0, 7) == "delete ") {
+        invalid();
+        return;
         runDelete(command);
     } else if (command.substr(0, 4) == "buy ") {
+        int a = 1/0;
         runBuy(command);
     } else if (command.substr(0, 7) == "select ") {
+        int a = 1/0;
         runSelect(command);
     } else if (command.substr(0, 7) == "modify ") {
+        int a = 1/0;
         runModify(command);
     } else if (command.substr(0, 7) == "import ") {
+        int a = 1/0;
         runImport(command);
     } else if (command.substr(0, 13) == "show finance ") {
+        int a = 1/0;
         runShowFinance(command);
     } else if (command.substr(0, 12) == "show finance"){
+        int a = 1/0;
         runShowFinance(command);
     }  else if (command.substr(0, 5) == "show ") {
+        int a = 1/0;
         runShow(command);
     }else if (command.substr(0, 4) == "show") {
+        int a = 1/0;
         runShow(command);
     } else {
+        int a = 1/0;
         invalid();
     }
 }
