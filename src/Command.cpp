@@ -257,6 +257,9 @@ std::pair<ParamType, int> Run::getToken(std::string str, int pos) {
     // std::cout << '&' << str.substr(pos, 7) << std::endl;
     // std::cout << '#' << preName << std::endl;
     // std::cout << (str.substr(pos, 7) == preName) << std::endl;
+    if (pos >= str.size()) {
+        return std::make_pair(kError, -1);
+    }
     if (str.substr(pos, 6) == preISBN) {
         int p1 = pos + 6;
         int p2 = getISBN(str, p1);
