@@ -45,52 +45,52 @@ void Run::run(std::string command) {
         }
         if (command.substr(0, 3) == "su ") {
             // std::cerr << "SIUUUUU" << std::endl;
-            invalid();
-            return;
+            // invalid();
+            // return;
             runSu(command);
         } else if (command.substr(0, 6) == "logout") {
-            invalid();
-            return;
+            // invalid();
+            // return;
             runLogout(command);
         } else if (command.substr(0, 9) == "register ") {
-            invalid();
-            return;
+            // invalid();
+            // return;
             runRegister(command);
         } else if (command.substr(0, 7) == "passwd ") {
-            invalid();
-            return;
+            // invalid();
+            // return;
             runPasswd(command);
         } else if (command.substr(0, 8) == "useradd ") {
-            invalid();
-            return;
+            // invalid();
+            // return;
             runUseradd(command);
         } else if (command.substr(0, 7) == "delete ") {
-            invalid();
-            return;
+            // invalid();
+            // return;
             runDelete(command);
         } else if (command.substr(0, 4) == "buy ") {
-            assert(0);
+            // assert(0);
             runBuy(command);
         } else if (command.substr(0, 7) == "select ") {
-            assert(0);
+            // assert(0);
             runSelect(command);
         } else if (command.substr(0, 7) == "modify ") {
-            assert(0);
+            // assert(0);
             runModify(command);
         } else if (command.substr(0, 7) == "import ") {
-            assert(0);
+            // assert(0);
             runImport(command);
         } else if (command.substr(0, 13) == "show finance ") {
-            assert(0);
+            // assert(0);
             runShowFinance(command);
         } else if (command.substr(0, 12) == "show finance"){
-            assert(0);
+            // assert(0);
             runShowFinance(command);
         }  else if (command.substr(0, 5) == "show ") {
-            assert(0);
+            // assert(0);
             runShow(command);
         }else if (command.substr(0, 4) == "show") {
-            assert(0);
+            // assert(0);
             runShow(command);
         } else {
             invalid();
@@ -111,6 +111,9 @@ int Run::getUserID(std::string str, int pos) {
         } else {
             return -1;
         }
+    }
+    if (str.length() - pos > 30) {
+        return -1;
     }
     return str.length();
 }
@@ -135,6 +138,9 @@ int Run::getUsername(std::string str, int pos) {
             return -1;
         }
     }
+    if (str.length() - pos > 30) {
+        return -1;
+    }
     return str.length();
 }
 int Run::getPrivilege(std::string str, int pos) {
@@ -149,6 +155,9 @@ int Run::getPrivilege(std::string str, int pos) {
             return -1;
         }
     }
+    if (str.length() - pos > 1) {
+        return -1;
+    }
     return str.length();
 }
 int Run::getISBN(std::string str, int pos) {
@@ -162,6 +171,9 @@ int Run::getISBN(std::string str, int pos) {
         } else {
             return -1;
         }
+    }
+    if (str.length() - pos > 20) {
+        return -1;
     }
     return str.length();
 }
@@ -178,6 +190,9 @@ int Run::getBookName(std::string str, int pos) {
         } else {
             return -1;
         }
+    }
+    if (str.length() - pos > 60) {
+        return -1;
     }
     return str.length();
 }
@@ -199,6 +214,9 @@ int Run::getQuantity(std::string str, int pos) {
             return -1;
         }
     }
+    if (str.length() - pos > 10) {
+        return -1;
+    }
     return str.length();
 }
 int Run::getPrice(std::string str, int pos) {
@@ -218,6 +236,9 @@ int Run::getPrice(std::string str, int pos) {
             return -1;
         }
     }
+    if (str.length() - pos > 13) {
+        return -1;
+    }
     return str.length();
 }
 int Run::getTotalCost(std::string str, int pos) {
@@ -234,6 +255,9 @@ int Run::getCount(std::string str, int pos) {
         } else {
             return -1;
         }
+    }
+    if (str.length() - pos > 10) {
+        return -1;
     }
     return str.length();
 }
