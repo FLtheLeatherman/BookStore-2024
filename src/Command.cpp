@@ -838,6 +838,10 @@ void Run::runModify(std::string command) {
             p1 = p2 + 1;
         }
     }
+    if (p1 != command.length() + 1) {
+        invalid();
+        return;
+    }
     // std::cout << vis[0] << ' ' << vis[1] << ' ' << vis[2] << ' ' << vis[3] << ' ' << vis[4] << std::endl;
     if (vis[0]) {
         if (vec[0].second.first > command.length()) {
