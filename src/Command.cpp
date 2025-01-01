@@ -48,17 +48,11 @@ void Run::run(std::string command) {
         } else if (command.substr(0, 4) == "show") {
             runShow(command);
         } else if (command.substr(0, 14) == "report finance") {
-            // runReportFinance(command);
-            assert(0);
-            // throw Invalid();
+            runReportFinance(command);
         } else if (command.substr(0, 15) == "report employee") {
-            // runReportEmployee(command);
-            assert(0);
-            // throw Invalid();
+            runReportEmployee(command);
         } else if (command.substr(0, 3) == "log") {
-            // runLog(command);
-            assert(0);
-            // throw Invalid();
+            runLog(command);
         } else {
             throw Invalid();
         }
@@ -807,19 +801,19 @@ void Run::runShowFinance(std::string command) {
     }
 }
 void Run::runReportFinance(std::string command) {
-    if (nowAccount.Privilege < 7) {
+    if (nowAccount.Privilege < 7 || command.length() != 14) {
         throw Invalid();
     }
     logStorage.showFinanceInfo();
 }
 void Run::runReportEmployee(std::string command) {
-    if (nowAccount.Privilege < 7) {
+    if (nowAccount.Privilege < 7 || command.length() != 15) {
         throw Invalid();
     }
     logStorage.showEmployeeLog();
 }
 void Run::runLog(std::string command) {
-    if (nowAccount.Privilege < 7) {
+    if (nowAccount.Privilege < 7 || command.length() != 3) {
         throw Invalid();
     }
     logStorage.showLog();
