@@ -37,8 +37,8 @@ void format(std::string &str) {
 }
 
 int main() {
-    freopen("test.in", "r", stdin);
-    freopen("test.out", "w", stdout);
+    // freopen("test.in", "r", stdin);
+    // freopen("test.out", "w", stdout);
     std::ios::sync_with_stdio(false);
     std::cin.tie(nullptr), std::cout.tie(nullptr);
     std::cout << std::fixed << std::setprecision(2);
