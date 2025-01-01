@@ -27,9 +27,11 @@ public:
         file.open(file_name, std::ios::in | std::ios::out | std::ios::binary);
         if (!file) {
             file.open(file_name, std::ios::out);
-            file.seekp(0);
-            int tmp = 0;
-            file.write(reinterpret_cast<char*>(&tmp), sizeof(int));
+            for (size_t i = 0; i < info_len; ++i) {
+                file.seekp(i * sizeof(int));
+                int tmp = 0;
+                file.write(reinterpret_cast<char*>(&tmp), sizeof(int));
+            }
         }
         file.close();
         file.open(file_name, std::ios::in | std::ios::out | std::ios::binary);

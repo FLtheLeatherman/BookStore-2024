@@ -20,6 +20,7 @@ void Run::run(std::string command) {
         }
         if (command.substr(0, 3) == "su ") {
             runSu(command);
+            curAccount = nowAccount;
         } else if (command.substr(0, 6) == "logout") {
             runLogout(command);
         } else if (command.substr(0, 9) == "register ") {
@@ -48,6 +49,8 @@ void Run::run(std::string command) {
             runShow(command);
         } else if (command.substr(0, 14) == "report finance") {
             runReportFinance(command);
+        } else if (command.substr(0, 15) == "report employee") {
+            runReportEmployee(command);
         } else if (command.substr(0, 3) == "log") {
             runLog(command);
         } else {
@@ -63,6 +66,9 @@ void Run::run(std::string command) {
             logStorage.addLog(UserID, 7, tmp);
         } else {
             logStorage.addLog(curAccount.UserID, 7, tmp);
+            if (curAccount.Privilege >= 3) {
+                logStorage.addEmployeeLog(curAccount.UserID, 7, tmp);
+            }
         }
         return;
     }
@@ -77,6 +83,9 @@ void Run::run(std::string command) {
         logStorage.addLog(UserID, len, tmp);
     } else {
         logStorage.addLog(curAccount.UserID, len, tmp);
+        if (curAccount.Privilege >= 3) {
+            logStorage.addEmployeeLog(curAccount.UserID, len, tmp);
+        }
     }
 }
 
@@ -453,6 +462,9 @@ void Run::runUseradd(std::string command) {
     if (!accountStorage.useradd(UserID, Password, Privilege, UserName)) {
         throw Invalid();
     }
+    if (Privilege >= 3) {
+        logStorage.addEmployee(UserID);
+    }
 }
 void Run::runDelete(std::string command) {
     if (nowAccount.Privilege < 7) {
@@ -793,6 +805,12 @@ void Run::runReportFinance(std::string command) {
         throw Invalid();
     }
     logStorage.showFinanceInfo();
+}
+void Run::runReportEmployee(std::string command) {
+    if (nowAccount.Privilege < 7) {
+        throw Invalid();
+    }
+    logStorage.showEmployeeLog();
 }
 void Run::runLog(std::string command) {
     if (nowAccount.Privilege < 7) {

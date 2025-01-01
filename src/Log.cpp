@@ -50,10 +50,37 @@ LogInfo::LogInfo(String30 UserID, int len, std::array<char, 400> str) {
     this->operation = str;
 }
 
+EmployeeLog::EmployeeLog() {
+    time = -1;
+    log = LogInfo();
+}
+EmployeeLog::EmployeeLog(int time, LogInfo log) {
+    this->time = time;
+    this->log.UserID = log.UserID;
+    this->log.len = log.len;
+    this->log.operation = log.operation;
+}
+bool EmployeeLog::operator <(const EmployeeLog &RHS) {
+    return this->time < RHS.time;
+}
+bool EmployeeLog::operator ==(const EmployeeLog &RHS) {
+    return this->time == RHS.time;
+}
+std::ostream& operator <<(std::ostream &os, const EmployeeLog &RHS) {
+    os << RHS.time;
+    return os;
+}
+
 void LogInfoStorage::initialize() {
     financeStorage.initialize("Finance");
     financeInfoStorage.initialize("FinanceInfo");
     logStorage.initialize("Log");
+    employeeStorage.initialize("EmployeeInfo");
+    employees.initialize("Employee");
+    employees.write_info(1, 1);
+    std::string root = "root";
+    String30 tmp = root;
+    employees.write(tmp, 1);
 }
 void LogInfoStorage::addFinance(double income, double expend, String30 UserID, int len, std::array<char, 400> operation) {
     int nowLen;
@@ -67,6 +94,22 @@ void LogInfoStorage::addFinance(double income, double expend, String30 UserID, i
     financeStorage.write(lst, nowLen);
     financeInfoStorage.write_info(nowLen, 1);
     financeInfoStorage.write(tmp, nowLen);
+}
+void LogInfoStorage::addEmployee(String30 UserID) {
+    int len = 0;
+    employees.get_info(len, 1);
+    len++;
+    employees.write(UserID, len);
+    employees.write_info(len, 1);
+}
+void LogInfoStorage::addEmployeeLog(String30 UserID, int len, std::array<char, 400> operation) {
+    LogInfo tmp(UserID, len, operation);
+    int time;
+    employees.get_info(time, 2);
+    time++;
+    EmployeeLog ep(time, tmp);
+    employeeStorage.insert(UserID, ep);
+    employees.write_info(time, 2);
 }
 void LogInfoStorage::addLog(String30 UserID, int len, std::array<char, 400> operation) {
     int nowLen;
@@ -157,6 +200,47 @@ void LogInfoStorage::showFinanceInfo() {
             }
         }
         std::cout << '\n';
+    }
+}
+void LogInfoStorage::showEmployeeLog() {
+    std::cout << "The Employee Report of Bookstore!\n";
+    int len;
+    employees.get_info(len, 1);
+    for (size_t i = 0; i < len; ++i) {
+        String30 UserID;
+        employees.read(UserID, i + 1);
+        std::vector<EmployeeLog> res = employeeStorage.query(UserID);
+        std::cout << "The report of " << UserID << ":\n";
+        size_t maxLen2 = headString2.size(), maxLen5 = headString5.size();
+        for (size_t j = 0; j < res.size(); ++j) {
+            maxLen2 = std::max(maxLen2, (size_t)res[j].log.len);
+            maxLen5 = std::max(maxLen5, std::to_string(res[i].time).size());
+        }
+        std::cout << headString5;
+        for (size_t j = headString5.size(); j <= maxLen5; ++j) {
+            std::cout << ' ';
+        }
+        std::cout << ' ' << headString2;
+        for (size_t j = headString2.size(); j <= maxLen2; ++j) {
+            std::cout << ' ';
+        }
+        std::cout << '\n';
+        for (size_t j = 0; j < res.size(); ++j) {
+            std::cout << res[j].time;
+            int beg = std::to_string(res[j].time).size();
+            for (size_t k = beg; k <= maxLen5; ++k) {
+                std::cout << ' ';
+            }
+            std::cout << ' ';
+            for (size_t k = 0; k <= maxLen2; ++k) {
+                if (k < res[j].log.len) {
+                    std::cout << res[j].log.operation[k];
+                } else {
+                    std::cout << ' ';
+                }
+            }
+            std::cout << '\n';
+        }
     }
 }
 void LogInfoStorage::showLog() {
