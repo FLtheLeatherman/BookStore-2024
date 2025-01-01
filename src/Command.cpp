@@ -13,6 +13,7 @@ void Run::initialize() {
 }
 
 void Run::run(std::string command) {
+    Account curAccount = nowAccount;
     try {
         if (!command.length()) {
             throw Invalid();
@@ -47,11 +48,35 @@ void Run::run(std::string command) {
             runShow(command);
         } else if (command.substr(0, 14) == "report finance") {
             runReportFinance(command);
+        } else if (command.substr(0, 3) == "log") {
+            runLog(command);
         } else {
             throw Invalid();
         }
     } catch (const Invalid &ex) {
         std::cout << ex.what();
+        std::string UserID;
+        std::array<char, 400> tmp;
+        tmp[0] = 'I', tmp[1] = 'n', tmp[2] = 'v', tmp[3] = 'a', tmp[4] = 'l', tmp[5] = 'i', tmp[6] = 'd';
+        if (curAccount.UserID.getLen() == 0) {
+            UserID = "No Login User";
+            logStorage.addLog(UserID, 7, tmp);
+        } else {
+            logStorage.addLog(curAccount.UserID, 7, tmp);
+        }
+        return;
+    }
+    std::string UserID;
+    int len = command.length();
+    std::array<char, 400> tmp;
+    for (size_t i = 0; i < len; ++i) {
+        tmp[i] = command[i];
+    }
+    if (curAccount.UserID.getLen() == 0) {
+        UserID = "No Login User";
+        logStorage.addLog(UserID, len, tmp);
+    } else {
+        logStorage.addLog(curAccount.UserID, len, tmp);
     }
 }
 
@@ -764,5 +789,14 @@ void Run::runShowFinance(std::string command) {
     }
 }
 void Run::runReportFinance(std::string command) {
+    if (nowAccount.Privilege < 7) {
+        throw Invalid();
+    }
     logStorage.showFinanceInfo();
+}
+void Run::runLog(std::string command) {
+    if (nowAccount.Privilege < 7) {
+        throw Invalid();
+    }
+    logStorage.showLog();
 }

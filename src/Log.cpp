@@ -40,10 +40,20 @@ std::ostream& operator <<(std::ostream &out, const FinanceInfo& financeInfo) {
     return out;
 }
 
+LogInfo::LogInfo() {
+    UserID = String30();
+    len = 0;
+}
+LogInfo::LogInfo(String30 UserID, int len, std::array<char, 400> str) {
+    this->UserID = UserID;
+    this->len = len;
+    this->operation = str;
+}
 
 void LogInfoStorage::initialize() {
     financeStorage.initialize("Finance");
     financeInfoStorage.initialize("FinanceInfo");
+    logStorage.initialize("Log");
 }
 void LogInfoStorage::addFinance(double income, double expend, String30 UserID, int len, std::array<char, 400> operation) {
     int nowLen;
@@ -57,6 +67,14 @@ void LogInfoStorage::addFinance(double income, double expend, String30 UserID, i
     financeStorage.write(lst, nowLen);
     financeInfoStorage.write_info(nowLen, 1);
     financeInfoStorage.write(tmp, nowLen);
+}
+void LogInfoStorage::addLog(String30 UserID, int len, std::array<char, 400> operation) {
+    int nowLen;
+    logStorage.get_info(nowLen, 1);
+    nowLen++;
+    LogInfo tmp(UserID, len, operation);
+    logStorage.write_info(nowLen, 1);
+    logStorage.write(tmp, nowLen);
 }
 bool LogInfoStorage::showFinance(int Count) {
     int len;
@@ -83,6 +101,7 @@ bool LogInfoStorage::showFinance(int Count) {
     return true;
 }
 void LogInfoStorage::showFinanceInfo() {
+    std::cout << "The Finance Report of Bookstore!\n";
     int len;
     financeInfoStorage.get_info(len, 1);
     size_t maxLen1 = headString1.size(), maxLen2 = headString2.size();
@@ -133,6 +152,44 @@ void LogInfoStorage::showFinanceInfo() {
         for (size_t i = 0; i < maxLen4; ++i) {
             if (i < expend.size() - 4) {
                 std::cout << expend[i];
+            } else {
+                std::cout << ' ';
+            }
+        }
+        std::cout << '\n';
+    }
+}
+void LogInfoStorage::showLog() {
+    std::cout << "The Log of Bookstore!\n";
+    int len;
+    logStorage.get_info(len, 1);
+    size_t maxLen1 = headString1.size(), maxLen2 = headString2.size();
+    for (size_t i = 0; i < len; ++i) {
+        LogInfo tmp;
+        logStorage.read(tmp, i + 1);
+        maxLen1 = std::max(maxLen1, tmp.UserID.getLen());
+        maxLen2 = std::max(maxLen2, (size_t)tmp.len);
+    }
+    std::cout << headString1;
+    for (size_t i = headString1.size(); i <= maxLen1; ++i) {
+        std::cout << ' ';
+    }
+    std::cout << ' ' << headString2;
+    for (size_t i = headString2.size(); i <= maxLen2; ++i) {
+        std::cout << ' ';
+    }
+    std::cout << '\n';
+    for (size_t i = 0; i < len; ++i) {
+        LogInfo tmp;
+        logStorage.read(tmp, i + 1);
+        std::cout << tmp.UserID;
+        for (size_t i = tmp.UserID.getLen(); i <= maxLen1; ++i) {
+            std::cout << ' ';
+        }
+        std::cout << ' ';
+        for (size_t i = 0; i <= maxLen2; ++i) {
+            if (i < tmp.len) {
+                std::cout << tmp.operation[i];
             } else {
                 std::cout << ' ';
             }
