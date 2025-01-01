@@ -49,13 +49,16 @@ void Run::run(std::string command) {
             runShow(command);
         } else if (command.substr(0, 14) == "report finance") {
             // runReportFinance(command);
-            throw Invalid();
+            assert(0);
+            // throw Invalid();
         } else if (command.substr(0, 15) == "report employee") {
             // runReportEmployee(command);
-            throw Invalid();
+            assert(0);
+            // throw Invalid();
         } else if (command.substr(0, 3) == "log") {
             // runLog(command);
-            throw Invalid();
+            assert(0);
+            // throw Invalid();
         } else {
             throw Invalid();
         }
