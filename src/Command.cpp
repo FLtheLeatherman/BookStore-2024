@@ -45,6 +45,8 @@ void Run::run(std::string command) {
             runShow(command);
         } else if (command.substr(0, 4) == "show") {
             runShow(command);
+        } else if (command.substr(0, 14) == "report finance") {
+            runReportFinance(command);
         } else {
             throw Invalid();
         }
@@ -528,7 +530,17 @@ void Run::runBuy(std::string command) {
     if (income < 0) {
         throw Invalid();
     }
-    logStorage.addLog(income, 0);
+
+    std::string Income = std::to_string(income);
+    Income = Income.substr(0, Income.size() - 4);
+    std::string tmp;
+    tmp = "buy " + quantity + " book" + (Quantity > 1 ? "s" : "") + " with ISBN = " + command.substr(p1 + 1, p2 - p1 - 1) + " and cost = " + Income;
+    int len = tmp.length();
+    std::array<char, 400> operation;
+    for (size_t i = 0; i < len; ++i) {
+        operation[i] = tmp[i];
+    }
+    logStorage.addFinance(income, 0, nowAccount.UserID, len, operation);
 }
 void Run::runSelect(std::string command) {
     if (nowAccount.Privilege < 3) {
@@ -718,7 +730,14 @@ void Run::runImport(std::string command) {
     if (!bookStorage.import(Quantity)) {
         throw Invalid();
     }
-    logStorage.addLog(0, TotalCost);
+    std::string tmp;
+    tmp = "import " + quantity + " book" + (Quantity > 1 ? "s" : "") + " with ISBN = " + command.substr(p1 + 1, p2 - p1 - 1) + " and cost = " + totalCost;
+    int len = tmp.length();
+    std::array<char, 400> operation;
+    for (size_t i = 0; i < len; ++i) {
+        operation[i] = tmp[i];
+    }
+    logStorage.addFinance(0, TotalCost, nowAccount.UserID, len, operation);
 }
 void Run::runShowFinance(std::string command) {
     if (nowAccount.Privilege < 7) {
@@ -743,4 +762,7 @@ void Run::runShowFinance(std::string command) {
     if (!logStorage.showFinance(number)) {
         throw Invalid();
     }
+}
+void Run::runReportFinance(std::string command) {
+    logStorage.showFinanceInfo();
 }

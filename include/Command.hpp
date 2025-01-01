@@ -61,6 +61,7 @@ public:
     void runModify(std::string);
     void runImport(std::string);
     void runShowFinance(std::string);
+    void runReportFinance(std::string);
 };
 
 #endif
